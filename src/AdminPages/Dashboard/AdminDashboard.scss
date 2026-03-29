@@ -1,0 +1,104 @@
+@use '../../mixins.scss';
+@use '../../global.scss';
+
+
+.allUsers {
+    width: 100%;
+    height: fit-content;
+    z-index: 1;
+
+    table {
+        width: 100%;
+        height: fit-content;
+
+        tr {
+            width: 100%;
+            height: 40px;
+            background: global.$bg-dark;
+            color: global.$text-main;
+
+            th {
+                color: global.$neon-green;
+            }
+
+            td {
+                border: none;
+                text-align: center;
+                gap: 20px;
+                button{
+                    height: 35px;
+                    width: 35px;
+                    border-radius: 50%;
+                    border: none;
+                    background: red;
+                    margin-left: 10px;
+                    margin-right: 10px;
+                    cursor: pointer;
+                }
+                .button{
+                    background: global.$neon-blue;
+                }
+            }
+        }
+    }
+}
+
+.edit-form-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: fit-content;
+    height: fit-content;
+    z-index: 99999;
+
+    form {
+        height: fit-content;
+        width: 450px;
+        padding: 2rem;
+        background: global.$bg-light;
+        border-radius: 20px;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, 
+                    rgba(0, 0, 0, 0.1) 0px 2px 4px 0px, 
+                    rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+        box-sizing: border-box;
+        @include mixins.flex-column;
+        align-items: center;
+
+        input {
+            @include mixins.input-filds;
+            border: 1px solid rgba(173, 173, 173, 0.322);
+            width: 100%;
+            margin-bottom: 1rem;
+
+            &:invalid:focus {
+                border: 1px solid red;
+            }
+        }
+
+        div {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
+
+            button[type="button"] {
+                border: none;
+                background-color: global.$text-muted;
+                cursor: pointer;
+                width: 50%;
+                height: 40px;
+                border-radius: 8px;
+            }
+
+            button[type="submit"] {
+                border: none;
+                background: global.$neon-green;
+                cursor: pointer;
+                width: 50%;
+                height: 40px;
+                border-radius: 8px;
+            }
+        }
+    }
+}

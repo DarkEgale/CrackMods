@@ -1,0 +1,54 @@
+@use '../../../global.scss' as global;
+@use '../../../mixins.scss' as mixins;
+
+.category-filter {
+    width: 100%;
+    margin-bottom: 2rem;
+
+    .categories-wrapper {
+        @include mixins.flex-center;
+        flex-wrap: wrap;
+        gap: 1rem;
+
+        .category-btn {
+            padding: 0.6rem 1.5rem;
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            color: global.$neon-blue;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: global.$font-main;
+            transition: all 0.3s ease;
+
+            &:hover {
+                border-color: global.$neon-blue;
+                background: rgba(0, 212, 255, 0.1);
+                transform: translateY(-2px);
+            }
+
+            &.active {
+                background: linear-gradient(135deg, global.$neon-blue, global.$neon-purple);
+                color: #1e293b;
+                border-color: global.$neon-blue;
+                box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .category-filter {
+        margin-bottom: 1.5rem;
+
+        .categories-wrapper {
+            gap: 0.8rem;
+
+            .category-btn {
+                padding: 0.5rem 1.2rem;
+                font-size: 0.85rem;
+            }
+        }
+    }
+}

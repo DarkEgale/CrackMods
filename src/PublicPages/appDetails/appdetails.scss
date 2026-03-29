@@ -1,0 +1,80 @@
+@use '../../global.scss';
+
+.details-wrapper {
+    background: #0b0e14;
+    min-height: 100vh;
+    color: #e2e8f0;
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    .loading-details, .error-details {
+        display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 1.5rem; color: #fff;
+    }
+
+    /* --- HEADER SECTION --- */
+    .details-header {
+        background: linear-gradient(to bottom, #0f172a, #0b0e14);
+        padding: 100px 0 60px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+        .header-flex { display: flex; align-items: center; gap: 30px; }
+
+        .main-app-icon { width: 120px; height: 120px; border-radius: 25px; object-fit: cover; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+
+        .app-title-area {
+            flex: 1;
+            h1 { font-size: 3rem; margin-bottom: 5px; color: #fff; text-shadow: global.$shd-neon; }
+            .category-text { color: global.$neon-blue; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; margin-bottom: 15px; }
+            .badge-row { display: flex; gap: 10px; font-size: 0.8rem;
+                span { padding: 4px 10px; border-radius: 6px; }
+                .version-badge { background: #1e293b; color: #fff; }
+                .rating-badge { background: #facc1520; color: #facc15; display: flex; align-items: center; gap: 4px; }
+                .size-badge { background: #05966920; color: #10b981; }
+            }
+        }
+
+        .download-btn-top {
+            background: global.$neon-blue; color: #000; padding: 12px 25px; border-radius: 10px; cursor: pointer; border: none; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s;
+            &:hover { box-shadow: global.$shd-neon; transform: translateY(-2px); }
+        }
+    }
+
+    /* --- MAIN LAYOUT --- */
+    .main-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; padding: 60px 20px; }
+
+    /* --- LEFT CONTENT --- */
+    .left-content {
+        h2 { font-size: 1.5rem; color: #fff; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; border-left: 3px solid global.$neon-blue; padding-left: 10px; }
+
+        .screenshots-section { margin-bottom: 50px; }
+        .screenshots-swiper {
+            img { width: 100%; border-radius: 12px; height: auto; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.05); }
+        }
+
+        .details-section .details-text { color: #94a3b8; line-height: 1.8; font-size: 1rem; }
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+        h3 { color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .requirements-card { background: rgba(255, 255, 255, 0.03); padding: 25px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 30px;
+            ul { list-style: none; padding: 0;
+                li { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 0.9rem; margin-bottom: 12px; .icon { color: global.$neon-blue; } }
+            }
+        }
+
+        .sidebar-ad-slot { text-align: center; margin-bottom: 30px; .ad-label { font-size: 10px; color: #4b5563; } .placeholder-ad-box { height: 250px; background: #000; border: 1px dashed #334155; display: flex; align-items: center; justify-content: center; color: #4b5563; } }
+
+        .final-download-btn { width: 100%; background: global.$neon-blue; color: #000; padding: 20px; border-radius: 15px; border: none; cursor: pointer; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; gap: 15px; transition: 0.3s;
+            small { display: block; font-size: 0.8rem; font-weight: 400; opacity: 0.8; }
+            &:hover { box-shadow: global.$shd-neon; transform: scale(1.02); }
+        }
+    }
+}
+
+/* Responseiveness */
+@media (max-width: 1024px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .details-header { .main-app-icon { width: 90px; height: 90px; } h1 { font-size: 2.2rem; } }
+}

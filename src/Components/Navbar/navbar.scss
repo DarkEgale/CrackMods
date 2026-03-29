@@ -1,0 +1,160 @@
+@use '../../global.scss';
+
+.Navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: 0.4s ease;
+    padding: 15px 0;
+
+    &.active-nav {
+        background: rgba(11, 14, 20, 0.85);
+        backdrop-filter: blur(15px);
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    nav {
+        max-width: 1250px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+
+        .logo {
+            text-decoration: none;
+            .logo-text {
+                font-size: 1.6rem;
+                font-weight: 800;
+                color: #fff;
+                span { color: global.$neon-blue; text-shadow: global.$shd-neon; }
+            }
+        }
+
+        .nav-links {
+            ul {
+                list-style: none;
+                display: flex;
+                align-items: center;
+                gap: 30px;
+
+                li a {
+                    text-decoration: none;
+                    color: #94a3b8;
+                    font-weight: 500;
+                    font-size: 0.95rem;
+                    transition: 0.3s;
+                    &:hover { color: global.$neon-blue; }
+                }
+
+                .login-btn-nav {
+                    background: global.$neon-blue;
+                    color: #000;
+                    padding: 8px 20px;
+                    border-radius: 50px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: 0.3s;
+                    &:hover { box-shadow: global.$shd-neon; transform: translateY(-2px); }
+                }
+            }
+        }
+
+        .user-menu-wrapper {
+            position: relative;
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 5px 12px;
+                border-radius: 50px;
+                cursor: pointer;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                
+                .avatar { background: global.$neon-blue; padding: 4px; border-radius: 50%; color: #000; display: flex; }
+                .username { color: #fff; font-size: 0.9rem; }
+                .rotate { transform: rotate(180deg); }
+            }
+
+            .user-dropdown {
+                position: absolute;
+                top: 50px;
+                right: 0;
+                background: #1a1f2b;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                width: 200px;
+                padding: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+                a, button {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 10px;
+                    width: 100%;
+                    background: transparent;
+                    border: none;
+                    color: #94a3b8;
+                    cursor: pointer;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    &:hover { background: rgba(255,255,255,0.05); color: #fff; }
+                }
+                .logout-btn { color: #ff4757; }
+            }
+        }
+
+        .mobile-toggle {
+            display: none; // ডেক্সটপে লুকানো থাকবে
+            color: #fff;
+            cursor: pointer;
+        }
+    }
+}
+
+/* --- Responsive (Mobile) Mobile Menu --- */
+@media (max-width: 768px) {
+    .Navbar {
+        nav {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%; // শুরুতে ডানে লুকানো থাকবে
+                width: 75%;
+                height: 100vh;
+                background: #0f172a;
+                flex-direction: column;
+                padding: 100px 30px;
+                transition: 0.5s ease-in-out;
+                z-index: 1001;
+                box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+
+                &.mobile-active { right: 0; } // ক্লিক করলে স্লাইড করে আসবে
+
+                ul {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    width: 100%;
+                    gap: 25px;
+
+                    li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
+                }
+            }
+
+            .mobile-toggle { display: block; z-index: 1002; }
+        }
+
+        .nav-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+        }
+    }
+}

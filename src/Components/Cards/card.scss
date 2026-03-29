@@ -1,0 +1,155 @@
+@use '../../global.scss';
+
+.Card-Body {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 12px;
+    transition: 0.4s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-8px);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(global.$neon-blue, 0.3);
+    }
+    
+    .img-container {
+        position: relative;
+        img.screenshot { 
+            width: 100%; 
+            border-radius: 12px; 
+            height: 180px; // স্ক্রিনশটের জন্য হাইট বাড়ানো হলো
+            object-fit: cover; // নিশ্চিত করে ইমেজ কেটে না যায় বা সংকুচিত না হয়
+        }
+    }
+
+    .card-meta {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        display: flex;
+        gap: 5px;
+        .rating-badge, .download-badge {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            .star-icon { color: #facc15; }
+        }
+    }
+
+    .card-bottom {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .app-main-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+
+            .app-icon-mini {
+                width: 45px; // নামের পাশের ছোট আইকন
+                height: 45px;
+                border-radius: 10px;
+                object-fit: cover;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .text-info {
+                display: flex;
+                flex-direction: column;
+                h3 { font-size: 1.1rem; color: #fff; margin: 0; font-weight: 600; }
+                .category-text { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+            }
+        }
+
+        .download-btn {
+            background: #272c38;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: global.$neon-blue;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            &:hover { background: global.$neon-blue; color: #000; box-shadow: global.$shd-neon; }
+        }
+    }
+}
+
+
+
+
+/* Ad Pop-up Styles */
+.ad-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .ad-modal {
+        background: #1a1f2b;
+        width: 90%;
+        max-width: 500px;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(global.$neon-blue, 0.2);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+
+        .ad-header {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .ad-content {
+            padding: 40px 20px;
+            text-align: center;
+            .placeholder-ad {
+                h3 { color: global.$neon-blue; margin-bottom: 10px; }
+                .ad-box-display {
+                    background: #000;
+                    height: 250px;
+                    margin-top: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 1px dashed #334155;
+                }
+            }
+        }
+
+        .ad-footer-progress {
+            height: 4px;
+            background: #334155;
+            .progress-bar {
+                height: 100%;
+                background: global.$neon-blue;
+                transition: width 1s linear;
+            }
+        }
+    }
+}

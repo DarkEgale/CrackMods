@@ -1,0 +1,208 @@
+
+@use '../../global.scss';
+@use '../../mixins.scss';
+
+
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 3rem 2rem;
+    min-height: 100vh;
+    background: transparent; 
+}
+
+.form-container {
+    width: 100%;
+    max-width: 750px;
+    height: fit-content;
+    padding: 2.5rem;
+    
+    background: global.$glass-bg;
+    backdrop-filter: global.$glass-blur;
+    border: global.$glass-border;
+    border-radius: 24px;
+    box-shadow: global.$shd-deep;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: global.$shd-inner;
+        pointer-events: none;
+    }
+
+    .form-header {
+        margin-bottom: 2.5rem;
+        text-align: left;
+
+        h2 {
+            margin: 0;
+            color: global.$text-main;
+            font-size: 1.8rem;
+            font-family: global.$font-main;
+            text-shadow: global.$shd-neon;
+        }
+
+        p {
+            color: global.$text-muted;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+    }
+}
+
+.app-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+    background: none !important;
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: global.$neon-blue;
+            font-family: global.$font-main;
+        }
+
+        input, textarea {
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: global.$border-radius;
+            font-size: 1rem;
+            color: global.$text-main;
+            transition: global.$transition-smooth;
+
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.3);
+            }
+
+            &:focus {
+                outline: none;
+                border-color: global.$neon-blue;
+                background: rgba(255, 255, 255, 0.08);
+                box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+            }
+        }
+    }
+
+    .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+
+        .full-width {
+            grid-column: span 2;
+        }
+    }
+
+    .upload-box {
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            color: global.$text-secondary;
+        }
+
+        .file-input {
+            input { display: none; }
+            
+            label {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                padding: 20px;
+                border: 2px dashed rgba(255, 255, 255, 0.15);
+                border-radius: global.$border-radius;
+                cursor: pointer;
+                color: global.$text-muted;
+                background: rgba(255, 255, 255, 0.03);
+                transition: global.$transition-smooth;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.07);
+                    border-color: global.$neon-blue;
+                    color: global.$neon-blue;
+                    box-shadow: global.$shd-neon;
+                }
+            }
+
+            &.binary label {
+                border-color: rgba(46, 204, 113, 0.3);
+                color: global.$neon-green;
+
+                &:hover {
+                    background: rgba(46, 204, 113, 0.05);
+                    border-color: global.$neon-green;
+                    box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
+                }
+            }
+        }
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1.2rem;
+        margin-top: 1.5rem;
+
+        button {
+            padding: 12px 28px;
+            border-radius: global.$border-radius;
+            font-weight: 600;
+            cursor: pointer;
+            transition: global.$transition-smooth;
+            font-family: global.$font-main;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: global.$text-muted;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: global.$text-main;
+            }
+        }
+
+        .btn-submit {
+            background: global.$btn-primary-bg;
+            border: none;
+            color: global.$text-main;
+            box-shadow: global.$shd-neon;
+
+            &:hover {
+                transform: translateY(-2px);
+                filter: brightness(1.1);
+                box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+    }
+}
+

@@ -1,0 +1,61 @@
+// Colors
+$primary-color: #6366f1;    // Modern Indigo
+$secondary-color: #f43f5e;  // Rose
+$bg-dark: #2f3031;          // Deep Navy
+$bg-light: #f8fafc;
+$text-main: #ffffff;
+$text-muted: #64748b;
+$text-primary: #ffffff;
+$text-secondary: #64748b;
+
+$neon-blue: #00d4ff;     // Main Accent (Buttons, Icons)
+$neon-purple: #8a2be2;   // Secondary (Gradients)
+$neon-pink: #ff0096;     // Highlights (Sale or New Apps)
+$neon-green: #2ecc71;
+
+// Status Colors
+$success-color: #2ecc71;  // Green
+$error-color: #e74c3c;    // Red
+$warning-color: #f39c12;  // Orange
+
+// Button Colors
+$btn-primary-bg: linear-gradient(135deg, $neon-blue, $neon-purple);
+$btn-primary-color: #1e293b;
+$btn-secondary-bg: rgba(0, 212, 255, 0.1);
+$btn-secondary-border: 1px solid rgba(0, 212, 255, 0.3);
+$btn-secondary-color: $neon-blue;
+
+// Fonts
+$font-main: 'Inter', sans-serif;
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$box-shadow:rgba(214, 9, 241, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+$border-radius: 12px;
+// Breakpoints
+$mobile: 576px;
+$tablet: 768px;
+$desktop: 1024px;
+
+
+//effects
+
+// ১. সলিড পার্পল গ্লাস ব্যাকগ্রাউন্ড (Harder & More Colorful)
+$glass-bg: rgba(88, 14, 92, 0.65); // অপাসিটি ০.৩৫ থেকে ০.৬৫ করলাম, কালার আরও ডিপ
+
+// ২. হার্ড বর্ডার (থিকনেস এবং গ্লো বাড়ানো হয়েছে)
+$glass-border-color: rgba(192, 132, 252, 0.5); // ২ পিক্সেল এবং বেশি উজ্জ্বল
+$glass-border: 2px solid $glass-border-color;
+
+// ৩. সুপার স্যাচুরেটেড ব্লার
+$glass-blur: blur(25px) saturate(250%); // স্যাচুরেশন অনেক বাড়িয়েছি যাতে কালার পপ করে
+
+// ৪. আল্টিমেট ডিপ শ্যাডো (আরও হার্ড লুকের জন্য)
+// ১. শার্প আউটার শ্যাডো (বেশি ছড়াবে না, শুধু নিচ দিয়ে একটি গভীরতা দেবে)
+$shd-deep: 0 10px 30px rgba(0, 0, 0, 0.5), 
+           0 4px 6px rgba(168, 85, 247, 0.2); // খুব হালকা পার্পল আভা
+
+// ২. থিন ইনার গ্লো (গ্লাসের ধারগুলোকে শার্প করার জন্য)
+$shd-inner: inset 0 0 1px rgba(255, 255, 255, 0.2), // একদম কিনারায় চিকন সাদা রেখা
+            inset 0 0 15px rgba(168, 85, 247, 0.3); // হালকা ভেতরের গ্লো
+
+// ৩. টাইট নিওন গ্লো (এটি ছড়িয়ে যাবে না, শুধু বর্ডারে লেগে থাকবে)
+$shd-neon: 0 0 15px rgba(168, 85, 247, 0.4);

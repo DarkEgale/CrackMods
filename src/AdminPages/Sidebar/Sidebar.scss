@@ -1,0 +1,144 @@
+
+@use '../../global.scss';
+@use '../../mixins.scss';
+
+.admin-sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+
+    // Glassmorphism Effects from Global
+    background: global.$glass-bg;
+    backdrop-filter: global.$glass-blur;
+    border-right: global.$glass-border;
+    box-shadow: global.$shd-deep;
+    
+    .sidebar-header {
+        padding: 2.5rem 1.5rem;
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+
+            .logo-icon {
+                background: global.$btn-primary-bg;
+                color: global.$text-main;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: global.$border-radius;
+                font-weight: 800;
+                box-shadow: global.$shd-neon;
+            }
+
+            span {
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: global.$text-main;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                font-family: global.$font-main;
+            }
+        }
+    }
+
+    .sidebar-nav {
+        flex: 1;
+        padding: 0 1rem;
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                padding: 14px 18px;
+                margin-bottom: 10px;
+                border-radius: global.$border-radius;
+                cursor: pointer;
+                color: global.$text-muted;
+                transition: global.$transition-smooth;
+                position: relative;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.05);
+                    color: global.$text-main;
+                    transform: translateX(5px);
+                }
+
+                &.active {
+                    background: global.$btn-primary-bg;
+                    color: global.$text-main;
+                    box-shadow: global.$shd-neon, global.$shd-inner;
+                    font-weight: 600;
+
+                    .icon {
+                        color: global.$text-main;
+                    }
+
+                    .arrow {
+                        margin-left: auto;
+                        opacity: 1;
+                        color: global.$text-main;
+                    }
+                }
+
+                .icon {
+                    display: flex;
+                    align-items: center;
+                    transition: global.$transition-smooth;
+                }
+
+                .label {
+                    font-size: 0.95rem;
+                    font-family: global.$font-main;
+                }
+
+                .arrow {
+                    opacity: 0;
+                    transition: global.$transition-smooth;
+                }
+            }
+        }
+    }
+
+    .sidebar-footer {
+        padding: 2rem 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+        .logout-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(global.$error-color, 0.1);
+            border: 1px solid rgba(global.$error-color, 0.3);
+            color: global.$error-color;
+            padding: 12px;
+            border-radius: global.$border-radius;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: global.$font-main;
+            transition: global.$transition-smooth;
+
+            &:hover {
+                background: global.$error-color;
+                color: global.$text-main;
+                box-shadow: 0 0 20px rgba(global.$error-color, 0.4);
+            }
+        }
+    }
+}

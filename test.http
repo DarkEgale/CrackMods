@@ -1,0 +1,8 @@
+### User Update Request
+PATCH http://localhost:5000/api/admin/update/69c662a296132b54d87931a6
+Content-Type: application/json
+
+{
+    "username": "rock",
+    "email": "rock@example.com"
+}
