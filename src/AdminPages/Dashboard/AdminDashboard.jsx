@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import './AdminDashboard.scss';
 import { Trash2, Edit, X, Mail, User as UserIcon, Shield } from "lucide-react";
 
@@ -8,14 +8,28 @@ export const AdminDashboard = () => {
     const [editingUser, setEditingUser] = useState(null); 
     const [updateLoading, setUpdateLoading] = useState(false);
 
-    const apiBase = 'http://localhost:5000/api/admin';
+    // --- সরাসরি হার্ডকোড করা বেস ইউআরএল ---
+    const BASE_URL = "https://crackmods.onrender.com/";
+    // অ্যাডমিন এপিআই পাথ (শেষে স্ল্যাশ ছাড়া রাখলে সুবিধা)
+    const apiBase = `${BASE_URL}api/admin`; 
 
     // ১. সব ইউজার ডাটা লোড করা
     const fetchAllUsers = async () => {
         try {
             const res = await fetch(`${apiBase}/all`, { credentials: 'include' });
             const data = await res.json();
-            if (res.ok) setUsers(data.allUsers);
+            
+            console.log("Full API Response:", data); // এই লাইনটি দিয়ে চেক করবেন কনসোলে কী আসছে
+
+            if (res.ok) {
+                // যদি ডাটা data.allUsers-এ থাকে তবে সেটা নেবে, 
+                // নাহলে যদি data.users-এ থাকে সেটা নেবে, 
+                // আর তাও না থাকলে সরাসরি data নেবে (যদি ডাটা সরাসরি অ্যারে হয়)
+                const usersList = data.allUsers || data.users || data;
+                
+                // নিশ্চিত করুন usersList একটি Array
+                setUsers(Array.isArray(usersList) ? usersList : []);
+            }
         } catch (err) { 
             console.error("Fetch Error:", err); 
         } finally { 
@@ -55,11 +69,14 @@ export const AdminDashboard = () => {
                 }),
                 credentials: 'include'
             });
-            const data = await res.json();
+            
             if (res.ok) {
                 alert("User updated!");
                 setEditingUser(null);
                 fetchAllUsers(); // টেবিল রিফ্রেশ
+            } else {
+                const data = await res.json();
+                alert(data.message || "Update failed");
             }
         } catch (err) { 
             console.error(err); 
@@ -89,7 +106,7 @@ export const AdminDashboard = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map((user) => (
+                            {users.length > 0 ? users.map((user) => (
                                 <tr key={user._id}>
                                     <td className="app-name">
                                         <div className="user-info-cell">
@@ -112,7 +129,11 @@ export const AdminDashboard = () => {
                                         </button>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="4" style={{textAlign: 'center', padding: '20px'}}>No users found.</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}
@@ -134,6 +155,7 @@ export const AdminDashboard = () => {
                                     type="text" 
                                     value={editingUser.name} 
                                     onChange={(e) => setEditingUser({...editingUser, name: e.target.value})} 
+                                    required
                                 />
                             </div>
 

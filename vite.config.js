@@ -8,6 +8,8 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  // --- নিচের server অংশটুকু পুরোপুরি মুছে দিন অথবা কমেন্ট করুন ---
+  /*
   server: {
     proxy: {
       '/api': {
@@ -17,4 +19,5 @@ export default defineConfig({
       }
     }
   }
+  */
 })

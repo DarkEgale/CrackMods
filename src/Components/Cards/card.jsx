@@ -11,24 +11,29 @@ export default function Card({ id, title, iconImg, screenshotImg, rating, downlo
     const [canClose, setCanClose] = useState(false);
     
     const navigate = useNavigate();
+    const BASE_URL = "https://crackmods.onrender.com/"; // হার্ডকোড করা লিঙ্ক
 
-    // অ্যাড পপ-আপ লজিক
     useEffect(() => {
         let timer;
-        if (showAd && timeLeft > 0) {
+        if (showAd) {
             timer = setInterval(() => {
-                setTimeLeft((prev) => prev - 1);
+                setTimeLeft((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        handleCloseAd();
+                        return 0;
+                    }
+                    // ৫ সেকেন্ড পার হলে ক্লোজ বাটন দেখাবে
+                    if (prev <= 6) setCanClose(true); 
+                    return prev - 1;
+                });
             }, 1000);
-
-            if (timeLeft <= 5) setCanClose(true);
-        } else if (showAd && timeLeft === 0) {
-            handleCloseAd(); 
         }
-
         return () => clearInterval(timer);
-    }, [showAd, timeLeft]);
+    }, [showAd]);
 
-    const handleDownloadClick = () => {
+    const handleDownloadClick = (e) => {
+        e.stopPropagation(); // কার্ডের মেইন ক্লিক যেন ট্রিগার না হয়
         setShowAd(true);
         setTimeLeft(10);
         setCanClose(false);
@@ -36,8 +41,13 @@ export default function Card({ id, title, iconImg, screenshotImg, rating, downlo
 
     const handleCloseAd = () => {
         setShowAd(false);
-        // ডাউনলোড লিংকের বদলে এখন ডিটেইলস পেজে রিডাইরেক্ট হবে
         navigate(`/app/${id}`); 
+    };
+
+    // ইমেজ পাথ চেক করার ফাংশন
+    const getFullImgPath = (path) => {
+        if (!path) return "placeholder.png";
+        return path.startsWith('http') ? path : `${BASE_URL}${path}`;
     };
 
     return (
@@ -46,38 +56,24 @@ export default function Card({ id, title, iconImg, screenshotImg, rating, downlo
                 ref={cardRef} 
                 className={`Card-Body ${isVisible ? 'reveal-visible' : 'reveal-hidden'}`}
             >
-                {/* --- কার্ডের মেইন ইমেজ (স্ক্রিনশট) --- */}
                 <div className="img-container" onClick={() => navigate(`/app/${id}`)}>
-                    {/* ডাটাবেস থেকে আসা স্ক্রিনশট */}
                     <img 
-                        src={screenshotImg || "minecraft_screen.jpg"} 
+                        src={getFullImgPath(screenshotImg)} 
                         alt={`${title} screenshot`} 
                         loading="lazy" 
                         className="screenshot"
                     />
                     
-                    {/* রেটিং এবং ডাউনলোড ব্যাজ --- */}
                     <div className="card-meta">
-                        {rating && (
-                            <span className="rating-badge">
-                                <Star size={12} className="star-icon" /> 
-                                {rating}
-                            </span>
-                        )}
-                        {downloads && (
-                            <span className="download-badge">
-                                {downloads}
-                            </span>
-                        )}
+                        {rating && <span className="rating-badge"><Star size={12}/> {rating}</span>}
+                        {downloads && <span className="download-badge">{downloads}</span>}
                     </div>
                 </div>
 
-                {/* --- কার্ডের নিচের অংশ (আইকন, নাম, ডাউনলোড বাটন) --- */}
                 <div className="card-bottom">
                     <div className="app-main-info" onClick={() => navigate(`/app/${id}`)}>
-                        {/* ছোট অ্যাপ আইকন */}
                         <img 
-                            src={iconImg || "app_icon_placeholder.png"} 
+                            src={getFullImgPath(iconImg)} 
                             alt={`${title} icon`} 
                             className="app-icon-mini"
                         />
@@ -94,7 +90,6 @@ export default function Card({ id, title, iconImg, screenshotImg, rating, downlo
                 </div>
             </div>
 
-            {/* --- Pop-up Ad Overlay --- */}
             {showAd && (
                 <div className="ad-overlay">
                     <div className="ad-modal">
@@ -111,7 +106,6 @@ export default function Card({ id, title, iconImg, screenshotImg, rating, downlo
                             <div className="placeholder-ad">
                                 <p className="ad-notice">SPONSORED ADVERTISEMENT</p>
                                 <div className="ad-box-display">
-                                     {/* এইখানে তোমার AdSense কোড বসবে */}
                                      <p>Google Ad Display Area</p>
                                 </div>
                             </div>

@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Card from "../../Components/Cards/card";
-import { LayoutGrid, AlertCircle } from "lucide-react";
+import { LayoutGrid, AlertCircle, Loader2 } from "lucide-react";
 import './category.scss';
 
 export const CategoryPage = () => {
-    const { slug } = useParams(); // ইউআরএল থেকে 'tools' বা 'games' নেবে
+    const { slug } = useParams(); 
     const [apps, setApps] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // --- সরাসরি হার্ডকোড করা লিঙ্ক ---
+    const BASE_URL = "https://crackmods.onrender.com/";
 
     useEffect(() => {
         const fetchCategoryApps = async () => {
             setLoading(true);
             try {
-                // তোমার ব্যাকএন্ডে এই এপিআই এন্ডপয়েন্ট থাকতে হবে
-                const res = await fetch(`${import.meta.env.VITE_API_URL}api/apps-by-category/${slug}`);
+                // আপনার ব্যাকএন্ড এন্ডপয়েন্ট অনুযায়ী লিঙ্কটি হবে (auth থাকলে মাঝখানে যোগ করুন)
+                // আমি এখানে api/auth/apps-by-category/${slug} দিচ্ছি আপনার আগের রাউট প্যাটার্ন দেখে
+                const res = await fetch(`${BASE_URL}api/auth/apps-by-category/${slug}`);
                 const data = await res.json();
+                
                 if (data.success) {
                     setApps(data.apps);
                 }
@@ -27,7 +32,7 @@ export const CategoryPage = () => {
         };
 
         fetchCategoryApps();
-        window.scrollTo(0, 0); // পেজ চেঞ্জ হলে উপরে স্ক্রল করবে
+        window.scrollTo(0, 0); 
     }, [slug]);
 
     return (
@@ -36,24 +41,25 @@ export const CategoryPage = () => {
                 <div className="container">
                     <h1>
                         <LayoutGrid className="icon" /> 
-                        <span>{slug.charAt(0).toUpperCase() + slug.slice(1)}</span> Apps
+                        <span>{slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : "Category"}</span> Apps
                     </h1>
                     <p>Explore the best {slug} applications for your Android device.</p>
                 </div>
             </header>
 
             <main className="container">
-                {/* --- TOP AD SLOT --- */}
                 <div className="category-ad-top">
                     <span className="ad-label">Advertisement</span>
                     <div className="ad-placeholder">
-                        {/* Google Ad Code Here */}
                         <p>Horizontal Responsive Ad</p>
                     </div>
                 </div>
 
                 {loading ? (
-                    <div className="loading-state">Gathering the best apps for you...</div>
+                    <div className="loading-state">
+                        <Loader2 className="spinner animate-spin" size={32} />
+                        <p>Gathering the best apps for you...</p>
+                    </div>
                 ) : (
                     <section className="apps-grid">
                         {apps.length > 0 ? (
@@ -62,8 +68,9 @@ export const CategoryPage = () => {
                                     key={app._id}
                                     id={app._id}
                                     title={app.name}
-                                    iconImg={`${import.meta.env.VITE_API_URL}${app.icon_path}`}
-                                    screenshotImg={`${import.meta.env.VITE_API_URL}${app.screenshots[0]}`}
+                                    // ইমেজ পাথ হার্ডকোড ফিক্স
+                                    iconImg={`${BASE_URL}${app.icon_path}`}
+                                    screenshotImg={app.screenshots?.[0] ? `${BASE_URL}${app.screenshots[0]}` : ""}
                                     category={app.category}
                                     rating={app.rating || "4.5"}
                                     downloads={app.downloads || "500K+"}
@@ -78,7 +85,6 @@ export const CategoryPage = () => {
                     </section>
                 )}
 
-                {/* --- BOTTOM AD SLOT --- */}
                 <div className="category-ad-bottom">
                     <div className="ad-placeholder">
                         <p>Native Banner Ad</p>

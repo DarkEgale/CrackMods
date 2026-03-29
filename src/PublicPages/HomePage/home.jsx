@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
-import { Search, Loader2 } from "lucide-react"; // লোডিং দেখানোর জন্য
+import { useEffect, useState } from "react";
+import { Search, Loader2 } from "lucide-react"; 
 import { Helmet } from "react-helmet-async";
 import Card from "../../Components/Cards/card";
 import './home.scss';
@@ -11,11 +11,8 @@ export const Home = () => {
     const [activeCategory, setActiveCategory] = useState("All");
     const [loading, setLoading] = useState(true);
 
-    // --- API URL ম্যানেজমেন্ট ---
-    // এটি নিশ্চিত করে যে শেষে একটা স্ল্যাশ থাকবেই, ডাবল স্ল্যাশ হবে না।
-    const API_BASE = import.meta.env.VITE_API_URL 
-        ? (import.meta.env.VITE_API_URL.endsWith('/') ? import.meta.env.VITE_API_URL : `${import.meta.env.VITE_API_URL}/`)
-        : "http://localhost:5000/";
+    // --- সরাসরি হার্ডকোড করা লিঙ্ক ---
+    const API_BASE = "https://crackmods.onrender.com/";
 
     const categories = ["All", "Tools", "Social", "Games", "Productivity"];
 
@@ -24,9 +21,9 @@ export const Home = () => {
         const fetchApps = async () => {
             setLoading(true);
             try {
+                // সরাসরি আপনার রেন্ডার সার্ভারের এন্ডপয়েন্ট কল করা হচ্ছে
                 const response = await fetch(`${API_BASE}api/auth/all-apps`);
                 
-                // যদি সার্ভার স্লিপিং মোডে থাকে বা এরর দেয়
                 if (!response.ok) {
                     throw new Error(`Server Error: ${response.status}`);
                 }
@@ -43,9 +40,9 @@ export const Home = () => {
             }
         };
         fetchApps();
-    }, [API_BASE]);
+    }, []); // API_BASE হার্ডকোড করা তাই ডিপেন্ডেন্সি থেকে সরিয়ে দিলাম
 
-    // ফিল্টারিং লজিক (useMemo ব্যবহার করা ভালো পারফরম্যান্সের জন্য)
+    // ফিল্টারিং লজিক
     useEffect(() => {
         let result = apps;
 
@@ -71,7 +68,6 @@ export const Home = () => {
                 <meta name="description" content="Download 100% working mod apks for games, tools, and social apps for free." />
             </Helmet>
 
-            {/* --- HERO SECTION --- */}
             <header className="hero-section">
                 <div className="hero-content">
                     <h1>Explore Premium <span>Applications For Free</span></h1>
@@ -88,7 +84,6 @@ export const Home = () => {
             </header>
 
             <main className="container">
-                {/* --- CATEGORY NAV --- */}
                 <nav className="filter-nav">
                     {categories.map(cat => (
                         <button
@@ -101,7 +96,6 @@ export const Home = () => {
                     ))}
                 </nav>
 
-                {/* --- APPS GRID & LOADING --- */}
                 {loading ? (
                     <div className="loading-container">
                         <Loader2 className="spinner" size={40} />
@@ -112,7 +106,6 @@ export const Home = () => {
                         {filteredApps.length > 0 ? (
                             filteredApps.map((app, index) => (
                                 <div key={app._id} className="app-card-item">
-                                    {/* Ads Logic */}
                                     {index > 0 && index % 6 === 0 && (
                                         <div className="ad-card-wrapper">
                                             <div className="ad-card-inner">
@@ -124,7 +117,7 @@ export const Home = () => {
                                     <Card
                                         id={app._id}
                                         title={app.name}
-                                        // এখানে API_BASE এর সাথে সরাসরি পাথ যোগ হবে, মাঝখানে স্ল্যাশ লাগবে না
+                                        // হার্ডকোড করা বেস ইউআরএল ব্যবহার করে ইমেজ দেখানো
                                         iconImg={`${API_BASE}${app.icon_path}`}
                                         screenshotImg={`${API_BASE}${app.screenshots?.[0] || ""}`}
                                         category={app.category}
