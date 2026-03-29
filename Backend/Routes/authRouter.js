@@ -3,7 +3,8 @@ import { Register, Login } from "../Controllers/authControllers.js";
 import { 
     getAllApps, 
     getAppsByCategory, 
-    getSingleApp 
+    getSingleApp ,
+    downloadApp
 } from "../Controllers/AdminControllers/appControllers.js";
 import { Protected } from "../Middleware/authmiddleware.js";
 // আপনার App Model টি ইমপোর্ট করুন (পাথ ঠিক করে নিন)
@@ -58,6 +59,7 @@ router.get('/download/:id', (req, res) => {
     // ডাউনলোড লজিক...
 });
 
+router.get("/download/:fileId", downloadApp);
 // --- 🔒 Protected Routes ---
 
 router.get('/user-profile', Protected, (req, res) => {

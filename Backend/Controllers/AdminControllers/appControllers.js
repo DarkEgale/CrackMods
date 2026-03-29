@@ -174,3 +174,38 @@ export const getAppsByCategory = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// টেলিগ্রাম থেকে ফাইল ডাউনলোড করার ফাংশন
+export const downloadApp = async (req, res) => {
+    try {
+        const { fileId } = req.params;
+        
+        // ১. টেলিগ্রাম থেকে ফাইলের পাথ (Path) বের করা
+        const fileUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/getFile?file_id=${fileId}`;
+        const response = await fetch(fileUrl);
+        const data = await response.json();
+
+        if (!data.ok) throw new Error("Telegram file not found");
+
+        const filePath = data.result.file_path;
+        
+        // ২. আসল ফাইলের ডাউনলোড লিঙ্ক তৈরি করা
+        const downloadUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_TOKEN}/${filePath}`;
+
+        // ৩. ফাইলটি স্ট্রিম করে ইউজারের ব্রাউজারে পাঠানো
+        const fileResponse = await fetch(downloadUrl);
+        
+        // হেডার সেট করা যাতে ব্রাউজার এটাকে ডাউনলোড হিসেবে ধরে
+        res.setHeader('Content-Disposition', `attachment; filename="crackmods_app.apk"`);
+        res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+
+        const arrayBuffer = await fileResponse.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        
+        res.send(buffer);
+
+    } catch (error) {
+        console.error("Download Error:", error);
+        res.status(500).json({ success: false, message: "Download failed!" });
+    }
+};

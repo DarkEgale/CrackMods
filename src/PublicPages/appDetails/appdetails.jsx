@@ -5,7 +5,7 @@ import { Download, Layers, Smartphone, Info, CheckCircle, ShieldCheck, Loader2 }
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-// Swiper styles (এগুলো ইমপোর্ট করা না থাকলে স্লাইডার কাজ করবে না)
+// Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -20,7 +20,7 @@ export const AppDetails = () => {
     const [isDownloading, setIsDownloading] = useState(false);
     const [showAd, setShowAd] = useState(false);
 
-    // শুধু এপিআই কলের জন্য বেস ইউআরএল লাগবে
+    // আপনার ব্যাকএন্ড এপিআই বেস ইউআরএল
     const API_BASE = "https://crackmods.onrender.com/";
 
     useEffect(() => {
@@ -39,11 +39,12 @@ export const AppDetails = () => {
         };
         fetchAppDetails();
         window.scrollTo(0, 0);
-    }, [id]);
+    }, [id, API_BASE]);
 
     if (loading) return <div className="loading-details">Loading Application Data...</div>;
     if (!app) return <div className="error-details">Application not found!</div>;
 
+    // ডাউনলোড বাটনে ক্লিক করলে অ্যাড মডাল দেখাবে
     const handleDownloadTrigger = () => {
         setIsDownloading(true); 
         setTimeout(() => {
@@ -59,19 +60,20 @@ export const AppDetails = () => {
                 <meta name="description" content={app.mainDescription?.substring(0, 160)} />
             </Helmet>
 
+            {/* AdModal Section */}
             {showAd && (
                 <div style={{ position: 'fixed', zIndex: 9999 }}>
                     <AdModal 
                         onClose={() => setShowAd(false)} 
-                        // সরাসরি app_path (Telegram File ID) যাবে, API_BASE যোগ হবে না
-                        downloadLink={app.app_path} 
+                        /* এখানে আমরা সরাসরি আমাদের ব্যাকএন্ড ডাউনলোড গেটওয়ে লিঙ্কটি পাঠাচ্ছি */
+                        downloadLink={`${API_BASE}api/auth/download/${app.app_path}`} 
                     />
                 </div>
             )}
 
             <header className="details-header">
                 <div className="container header-flex">
-                    {/* Cloudinary লিঙ্ক সরাসরি ব্যবহার করা হয়েছে */}
+                    {/* Cloudinary ইমেজ সরাসরি ব্যবহার করা হয়েছে */}
                     <img src={app.icon_path} alt={app.name} className="main-app-icon" />
                     <div className="app-title-area">
                         <h1>{app.name}</h1>
@@ -106,7 +108,6 @@ export const AppDetails = () => {
                                 {app.screenshots.map((screen, index) => (
                                     <SwiperSlide key={index}>
                                         <div className="screenshot-card">
-                                            {/* স্ক্রিনশট লিঙ্ক সরাসরি ব্যবহার করা হয়েছে */}
                                             <img src={screen} alt={`preview-${index}`} />
                                         </div>
                                     </SwiperSlide>
