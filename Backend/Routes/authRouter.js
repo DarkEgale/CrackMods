@@ -6,42 +6,62 @@ import {
     getSingleApp 
 } from "../Controllers/AdminControllers/appControllers.js";
 import { Protected } from "../Middleware/authmiddleware.js";
+// আপনার App Model টি ইমপোর্ট করুন (পাথ ঠিক করে নিন)
+import Apps from "../Models/AppsModels.js"; 
 
 const router = express.Router();
 
-// --- 🔓 Public Routes (লগইন ছাড়াই সবাই এক্সেস করতে পারবে) ---
+// --- 🌐 SEO & Sitemap Route ---
+// এটি সবার উপরে বা পাবলিক রাউটের ভেতরে রাখতে পারেন
+router.get('/sitemap.xml', async (req, res) => {
+    try {
+        const apps = await Apps.find({}, '_id updatedAt');
 
-// ১. রেজিস্ট্রেশন এবং লগইন
-router.post('/register', Register);
-router.post('/login', Login);
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://crack-mods.vercel.app/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>`;
 
-// ২. হোম পেজ (সব অ্যাপের লিস্ট)
-router.get('/all-apps', getAllApps);
+        apps.forEach(app => {
+            const date = app.updatedAt ? new Date(app.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+            xml += `
+    <url>
+        <loc>https://crack-mods.vercel.app/app/${app._id}</loc>
+        <lastmod>${date}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>`;
+        });
 
-// ৩. ক্যাটাগরি পেজ (Tools, Games ইত্যাদি ফিল্টার)
-router.get('/apps-by-category/:slug', getAppsByCategory);
+        xml += `\n</urlset>`;
 
-// ৪. অ্যাপ ডিটেইলস পেজ (আইডি দিয়ে একটি নির্দিষ্ট অ্যাপ দেখা)
-router.get('/app-details/:id', getSingleApp); 
-
-// ৫. ডাউনলোড রাউট (সরাসরি ডাউনলোড করার জন্য)
-// যদি তুমি ডাউনলোডের সংখ্যা ট্র্যাক করতে চাও, তবে একটি কন্ট্রোলার লাগবে
-router.get('/download/:id', (req, res) => {
-    // এখানে সরাসরি ফাইল সার্ভ করা বা রিডাইরেক্ট লজিক থাকবে
-    // উদাহরণস্বরূপ:
-    // const app = await App.findById(req.params.id);
-    // res.redirect(`http://localhost:5000/${app.app_path}`);
+        res.header('Content-Type', 'application/xml');
+        res.status(200).send(xml);
+    } catch (error) {
+        console.error("Sitemap Error:", error);
+        res.status(500).send("Error generating sitemap");
+    }
 });
 
+// --- 🔓 Public Routes ---
 
-// --- 🔒 Protected Routes (শুধু লগইন করা ইউজারদের জন্য) ---
+router.post('/register', Register);
+router.post('/login', Login);
+router.get('/all-apps', getAllApps);
+router.get('/apps-by-category/:slug', getAppsByCategory);
+router.get('/app-details/:id', getSingleApp); 
 
-// ইউজার প্রোফাইল
+router.get('/download/:id', (req, res) => {
+    // ডাউনলোড লজিক...
+});
+
+// --- 🔒 Protected Routes ---
+
 router.get('/user-profile', Protected, (req, res) => {
     res.json({ success: true, user: req.user });
 });
-
-// যদি ভবিষ্যতে ইউজারদের জন্য 'Favorite' বা 'Review' সিস্টেম করো:
-// router.post('/add-review', Protected, addReviewController);
 
 export default router;

@@ -1,0 +1,14 @@
+# সব সার্চ ইঞ্জিন বোটের জন্য নিয়ম
+User-agent: *
+
+# কোন পেজগুলো ইনডেক্স করা নিষেধ (যেমন অ্যাডমিন প্যানেল বা ড্যাশবোর্ড)
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /user-profile
+
+# বাকি সব পেজ ইনডেক্স করার অনুমতি দেওয়া হলো
+Allow: /
+
+# আপনার ডায়নামিক সাইটম্যাপের লিঙ্ক (আপনার ব্যাকএন্ড ইউআরএল অনুযায়ী)
+Sitemap: https://crackmods.onrender.com/api/auth/sitemap.xml
