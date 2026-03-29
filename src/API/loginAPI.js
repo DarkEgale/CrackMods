@@ -2,7 +2,7 @@
  
  
  export const userLogin = async (credentials) => {
-    const api = 'http://localhost:5000/api/auth/login';
+    const api = `${import.meta.env.VITE_API_URL}api/auth/login`; // API URL from environment variable';
     try {
         const res = await fetch(api, {
             method: 'POST',
@@ -22,6 +22,9 @@
         return data; 
 
     } catch (error) {
+
+
+        
         console.error('Login Error:', error.message);
         throw error; 
     }

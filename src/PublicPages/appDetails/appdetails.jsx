@@ -22,7 +22,7 @@ export const AppDetails = () => {
         const fetchAppDetails = async () => {
             try {
                 // তোমার ব্যাকএন্ড এপিআই এন্ডপয়েন্ট
-                const res = await fetch(`http://localhost:5000/api/auth/app-details/${id}`);
+                const res = await fetch(`${import.meta.env.VITE_API_URL}api/apps/${id}`);
                 const data = await res.json();
                 if (data.success) {
                     setApp(data.app);
@@ -52,13 +52,13 @@ export const AppDetails = () => {
                 {/* সোশ্যাল মিডিয়ার জন্য (Open Graph) */}
                 <meta property="og:title" content={`${app.name} Mod APK Download`} />
                 <meta property="og:description" content={app.mainDescription?.substring(0, 100)} />
-                <meta property="og:image" content={`http://localhost:5000/${app.icon_path}`} />
+                <meta property="og:image" content={`${import.meta.env.VITE_API_URL}${app.icon_path}`} />
             </Helmet>
 
             {/* --- HEADER SECTION --- */}
             <header className="details-header">
                 <div className="container header-flex">
-                    <img src={`http://localhost:5000/${app.icon_path}`} alt={app.name} className="main-app-icon" />
+                    <img src={`${import.meta.env.VITE_API_URL}${app.icon_path}`} alt={app.name} className="main-app-icon" />
                     <div className="app-title-area">
                         <h1>{app.name}</h1>
                         <p className="category-text"><Layers size={14} /> {app.category}</p>
@@ -83,7 +83,7 @@ export const AppDetails = () => {
                             <Swiper modules={[Navigation, Pagination, Autoplay]} spaceBetween={15} slidesPerView={1.5} navigation pagination={{ clickable: true }} breakpoints={{ 640: { slidesPerView: 2.5 }, 1024: { slidesPerView: 3.5 } }}>
                                 {app.screenshots.map((screen, index) => (
                                     <SwiperSlide key={index}>
-                                        <img src={`http://localhost:5000/${screen}`} alt={`${app.name} Screenshot ${index + 1}`} loading="lazy" />
+                                        <img src={`${import.meta.env.VITE_API_URL}${screen}`} alt={`${app.name} Screenshot ${index + 1}`} loading="lazy" />
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
@@ -156,7 +156,7 @@ export const AppDetails = () => {
 
             {/* --- AD MODAL --- */}
             {showAd && (
-                <AdModal onClose={() => setShowAd(false)} downloadLink={`http://localhost:5000/${app.app_path}`} />
+                <AdModal onClose={() => setShowAd(false)} downloadLink={`${import.meta.env.VITE_API_URL}${app.app_path}`} />
             )}
         </div>
     );

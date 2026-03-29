@@ -55,7 +55,7 @@ export const AppUploadForm = () => {
         }
 
         try {
-            const api = 'http://localhost:5000/api/admin/publish';
+            const api = `${import.meta.env.VITE_API_URL}api/admin/publish-app`;
             const res = await fetch(api, { method: "POST", body: data });
             if (res.ok) {
                 alert("App Published Successfully!");

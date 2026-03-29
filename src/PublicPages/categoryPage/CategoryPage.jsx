@@ -14,7 +14,7 @@ export const CategoryPage = () => {
             setLoading(true);
             try {
                 // তোমার ব্যাকএন্ডে এই এপিআই এন্ডপয়েন্ট থাকতে হবে
-                const res = await fetch(`http://localhost:5000/api/auth/apps-by-category/${slug}`);
+                const res = await fetch(`${import.meta.env.VITE_API_URL}api/apps-by-category/${slug}`);
                 const data = await res.json();
                 if (data.success) {
                     setApps(data.apps);
@@ -62,8 +62,8 @@ export const CategoryPage = () => {
                                     key={app._id}
                                     id={app._id}
                                     title={app.name}
-                                    iconImg={`http://localhost:5000/${app.icon_path}`}
-                                    screenshotImg={`http://localhost:5000/${app.screenshots[0]}`}
+                                    iconImg={`${import.meta.env.VITE_API_URL}${app.icon_path}`}
+                                    screenshotImg={`${import.meta.env.VITE_API_URL}${app.screenshots[0]}`}
                                     category={app.category}
                                     rating={app.rating || "4.5"}
                                     downloads={app.downloads || "500K+"}

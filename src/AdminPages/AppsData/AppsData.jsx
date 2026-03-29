@@ -17,7 +17,7 @@ export const AppsData = () => {
     });
     const [editFiles, setEditFiles] = useState({ icon: null, apkFile: null });
 
-    const api = 'http://localhost:5000/api/admin';
+    const api = `${import.meta.env.VITE_API_URL}api/admin`; // API URL from environment variable
 
     const fetchApps = async () => {
         setLoading(true);
