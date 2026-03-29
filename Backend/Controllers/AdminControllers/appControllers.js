@@ -1,70 +1,64 @@
 import Apps from "../../Models/AppsModels.js";
-import fs from "fs";
-import path from "path";
+import { cloudinary } from "../../Middleware/multer.js";
+import TelegramBot from "node-telegram-bot-api";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const bot = new TelegramBot(process.env.TELEGRAM_TOKEN);
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+// --- হেল্পার ফাংশন: ক্লাউডিনারিতে ইমেজ আপলোড (Buffer থেকে) ---
+const uploadToCloudinary = (fileBuffer) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: "crackmods_assets", upload_preset: "ColudinaryImages" },
+            (error, result) => {
+                if (result) resolve(result.secure_url);
+                else reject(error);
+            }
+        );
+        stream.end(fileBuffer);
+    });
+};
 
 // ১. নতুন অ্যাপ পাবলিশ করা (Create)
 export const publishApp = async (req, res) => {
     try {
-        // নতুন SEO ফিল্ডগুলো destructure করা হয়েছে
-        const { 
-            name, 
-            version, 
-            category, 
-            mainDescription, 
-            features, 
-            whyChoose, 
-            howToInstall, 
-            requirements 
-        } = req.body;
+        const { name, version, category, mainDescription, features, whyChoose, howToInstall, requirements } = req.body;
 
-        // ফাইল চেক (আইকন এবং এপিকে থাকা বাধ্যতামূলক)
         if (!req.files || !req.files['icon'] || !req.files['apkFile']) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Please upload both App Icon and APK File" 
-            });
+            return res.status(400).json({ success: false, message: "Please upload both App Icon and APK File" });
         }
 
-        const icon_path = req.files['icon'][0].path;
-        const app_path = req.files['apkFile'][0].path;
-        
-        const screenshots = req.files['screenshots'] 
-            ? req.files['screenshots'].map(file => file.path) 
-            : [];
+        // আইকন আপলোড (Cloudinary)
+        const icon_path = await uploadToCloudinary(req.files['icon'][0].buffer);
 
-        // ডাটাবেসে নতুন অ্যাপ তৈরি (নতুন ফিল্ড সহ)
+        // স্ক্রিনশট আপলোড (Cloudinary)
+        let screenshots = [];
+        if (req.files['screenshots']) {
+            for (const file of req.files['screenshots']) {
+                const url = await uploadToCloudinary(file.buffer);
+                screenshots.push(url);
+            }
+        }
+
+        // APK ফাইল আপলোড (Telegram)
+        const apkFile = req.files['apkFile'][0];
+        const telegramRes = await bot.sendDocument(CHAT_ID, apkFile.buffer, {
+            caption: `📦 App: ${name}\n🚀 Version: ${version}`,
+        }, { filename: apkFile.originalname });
+
+        const app_path = telegramRes.document.file_id; // এখানে টেলিগ্রামের File ID সেভ হবে
+
         const newApp = await Apps.create({
-            name,
-            version,
-            category,
-            mainDescription,
-            features,
-            whyChoose,
-            howToInstall,
-            requirements,
-            icon_path,
-            app_path,
-            screenshots
+            name, version, category, mainDescription, features, whyChoose, howToInstall, requirements,
+            icon_path, app_path, screenshots
         });
 
-        res.status(201).json({ 
-            success: true, 
-            message: "Application published successfully!", 
-            data: newApp 
-        });
+        res.status(201).json({ success: true, message: "Application published successfully!", data: newApp });
 
     } catch (error) {
-        // এরর হলে আপলোড হওয়া ফাইলগুলো সার্ভার থেকে মুছে ফেলা
-        if (req.files) {
-            const uploadedFiles = [
-                ...(req.files['icon'] || []),
-                ...(req.files['apkFile'] || []),
-                ...(req.files['screenshots'] || [])
-            ];
-            uploadedFiles.forEach(file => {
-                if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
-            });
-        }
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -97,33 +91,33 @@ export const updateApp = async (req, res) => {
         const existingApp = await Apps.findById(id);
         if (!existingApp) return res.status(404).json({ success: false, message: "App not found" });
 
-        const { 
-            name, 
-            version, 
-            category, 
-            mainDescription, 
-            features, 
-            whyChoose, 
-            howToInstall, 
-            requirements 
-        } = req.body;
+        const dataToUpdate = { ...req.body };
 
-        // নতুন ফাইল আসলে আপডেট হবে, নাহলে আগেরগুলোই থাকবে
-        const icon_path = req.files?.['icon'] ? req.files['icon'][0].path : existingApp.icon_path;
-        const app_path = req.files?.['apkFile'] ? req.files['apkFile'][0].path : existingApp.app_path;
-        const screenshots = req.files?.['screenshots'] 
-            ? req.files['screenshots'].map(file => file.path) 
-            : existingApp.screenshots;
+        // নতুন আইকন আসলে
+        if (req.files?.['icon']) {
+            dataToUpdate.icon_path = await uploadToCloudinary(req.files['icon'][0].buffer);
+        }
 
-        const updatedApp = await Apps.findByIdAndUpdate(
-            id,
-            { 
-                name, version, category, 
-                mainDescription, features, whyChoose, howToInstall, 
-                requirements, icon_path, app_path, screenshots 
-            },
-            { new: true, runValidators: true }
-        );
+        // নতুন APK আসলে
+        if (req.files?.['apkFile']) {
+            const apkFile = req.files['apkFile'][0];
+            const telegramRes = await bot.sendDocument(CHAT_ID, apkFile.buffer, {
+                caption: `🆙 Update: ${req.body.name || existingApp.name}`,
+            }, { filename: apkFile.originalname });
+            dataToUpdate.app_path = telegramRes.document.file_id;
+        }
+
+        // নতুন স্ক্রিনশট আসলে
+        if (req.files?.['screenshots']) {
+            let newScreenshots = [];
+            for (const file of req.files['screenshots']) {
+                const url = await uploadToCloudinary(file.buffer);
+                newScreenshots.push(url);
+            }
+            dataToUpdate.screenshots = newScreenshots;
+        }
+
+        const updatedApp = await Apps.findByIdAndUpdate(id, dataToUpdate, { new: true });
 
         res.status(200).json({ success: true, message: "App updated successfully", data: updatedApp });
     } catch (error) {
@@ -137,34 +131,21 @@ export const deleteApp = async (req, res) => {
         const app = await Apps.findById(req.params.id);
         if (!app) return res.status(404).json({ success: false, message: "App not found" });
 
-        // সার্ভার থেকে ফাইলগুলো চিরতরে ডিলিট করা
-        const filesToDelete = [app.icon_path, app.app_path, ...app.screenshots];
-        filesToDelete.forEach(filePath => {
-            if (filePath && fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        });
-
+        // নোট: ক্লাউডিনারি বা টেলিগ্রাম থেকে ফাইল ডিলিট করার কোড এখানে দেওয়া হয়নি, 
+        // কারণ এতে অনেক সময় API লিমিট শেষ হয়ে যায়। ডাটাবেস থেকে ডিলিট করাই আপাতত যথেষ্ট।
         await Apps.findByIdAndDelete(req.params.id);
-        res.status(200).json({ success: true, message: "App and associated files deleted" });
+        res.status(200).json({ success: true, message: "App deleted successfully" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-// ৬. ক্যাটাগরি অনুযায়ী অ্যাপ খুঁজে বের করা (Category Search)
+// ৬. ক্যাটাগরি অনুযায়ী অ্যাপ খুঁজে বের করা
 export const getAppsByCategory = async (req, res) => {
     try {
         const { slug } = req.params;
-        // Case-insensitive exact match: SEO এর জন্য এটি সেরা
-        const apps = await Apps.find({ 
-            category: { $regex: new RegExp(`^${slug}$`, "i") } 
-        });
-
-        res.status(200).json({
-            success: true,
-            apps: apps
-        });
+        const apps = await Apps.find({ category: { $regex: new RegExp(`^${slug}$`, "i") } });
+        res.status(200).json({ success: true, apps: apps });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

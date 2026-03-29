@@ -1,49 +1,49 @@
-import multer from "multer";
-import path from "path";
-import fs from "fs";
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import multer from 'multer';
+import dotenv from 'dotenv';
+import path from 'path';
 
-// ফাইল যেখানে জমা হবে সেই ডিরেক্টরি তৈরি করা (যদি না থাকে)
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        let uploadPath = 'uploads/';
-        
-        // ফিল্ড নেম অনুযায়ী আলাদা ফোল্ডার সিলেক্ট করা
-        if (file.fieldname === "icon") uploadPath += "icons/";
-        else if (file.fieldname === "screenshots") uploadPath += "screenshots/";
-        else if (file.fieldname === "apkFile") uploadPath += "apks/";
+dotenv.config();
 
-        // ফোল্ডার না থাকলে তৈরি করে নেবে
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        // ইউনিক নাম তৈরি করা: timestamp + original name
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
+// ১. ক্লাউডিনারি কনফিগারেশন (সরাসরি এখানেই)
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// ফাইল ফিল্টার (শুধু নির্দিষ্ট ফরম্যাট অ্যালাউ করা)
+// ২. ইমেজের জন্য ক্লাউডিনারি স্টোরেজ (Icon & Screenshots)
+const imageStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'crackmods_assets',
+        upload_preset: 'ColudinaryImages', // আপনার ড্যাশবোর্ডের প্রিসেট নাম
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+    },
+});
+
+// ৩. APK ফাইলের জন্য মেমোরি স্টোরেজ (এটি সার্ভারে ফাইল জমা করবে না, সরাসরি র‍্যামে রাখবে)
+// এতে আপনার রেন্ডার সার্ভার ফুল হবে না।
+const memoryStorage = multer.memoryStorage();
+
+// ৪. ফাইল ফিল্টার লজিক
 const fileFilter = (req, file, cb) => {
     if (file.fieldname === "apkFile") {
-        if (file.originalname.endsWith('.apk')) {
-            cb(null, true);
-        } else {
-            cb(new Error("Only APK files are allowed!"), false);
-        }
+        file.originalname.endsWith('.apk') ? cb(null, true) : cb(new Error("Only APK allowed!"), false);
     } else {
-        if (file.mimetype.startsWith("image/")) {
-            cb(null, true);
-        } else {
-            cb(new Error("Only images are allowed!"), false);
-        }
+        file.mimetype.startsWith("image/") ? cb(null, true) : cb(new Error("Only images allowed!"), false);
     }
 };
 
+// ৫. এক্সপোর্ট করা (রাউট ফাইলে ব্যবহারের জন্য)
+// আমরা এখানে দুই ধরণের স্টোরেজকে হ্যান্ডেল করার জন্য 'memoryStorage' কেই মেইন রাখি,
+// কারণ এক সাথে দুইটা স্টোরেজ ইঞ্জিন কাজ করে না। 
+// ইমেজগুলো আমরা পরে কন্ট্রোলার থেকে ক্লাউডিনারিতে পুশ করবো।
 export const upload = multer({ 
-    storage: storage,
+    storage: memoryStorage, 
     fileFilter: fileFilter,
-    limits: { fileSize: 100 * 1024 * 1024 } // সর্বোচ্চ ১০০ এমবি লিমিট
+    limits: { fileSize: 100 * 1024 * 1024 } // 100MB
 });
+
+export { cloudinary };
