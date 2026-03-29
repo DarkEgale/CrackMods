@@ -13,18 +13,38 @@ export const AdModal = ({ onClose, downloadLink }) => {
                 setTimeLeft((prev) => prev - 1);
             }, 1000);
 
-            // ৫ সেকেন্ড পর ক্লোজ বাটন দেখাবে
             if (timeLeft <= 5) setCanClose(true);
         } else if (timeLeft === 0) {
-            handleFinalRedirect(); // ১০ সেকেন্ড শেষ হলে অটো ডাউনলোড
+            handleFinalRedirect();
         }
 
         return () => clearInterval(timer);
     }, [timeLeft]);
 
+    // --- অ্যাড লোড করার ১০০% কার্যকর উপায় ---
+    useEffect(() => {
+        const adId = "8ba4c4f8adfef978106d9fce39912c16";
+        
+        const loadAd = () => {
+            const container = document.getElementById(`container-${adId}`);
+            // যদি কন্টেইনার পাওয়া যায় এবং এর ভেতরে আগে থেকে কিছু না থাকে
+            if (container && container.innerHTML === "") {
+                const script = document.createElement("script");
+                script.src = `https://pl29009072.profitablecpmratenetwork.com/${adId}/invoke.js`;
+                script.async = true;
+                script.setAttribute("data-cfasync", "false");
+                container.appendChild(script);
+            }
+        };
+
+        // ৫০০০ মিলি-সেকেন্ড (০.৫ সেকেন্ড) ডিলে দিন যেন ডোম রেডি হয়
+        const timer = setTimeout(loadAd, 500);
+
+        return () => clearTimeout(timer);
+    }, []);
+
     const handleFinalRedirect = () => {
-        onClose(); // পপ-আপ ক্লোজ হবে
-        // আসল ডাউনলোড শুরু হবে
+        onClose();
         if (downloadLink) {
             window.location.href = downloadLink;
         }
@@ -45,10 +65,11 @@ export const AdModal = ({ onClose, downloadLink }) => {
                 <div className="ad-content">
                     <div className="placeholder-ad">
                         <h3>SPONSORED ADVERTISEMENT</h3>
-                        <p>Please wait for {timeLeft} seconds. Your download is ready.</p>
+                        <p>Your download link is generating. Please wait...</p>
+                        
                         <div className="ad-box-display">
-                             {/* তোমার AdSense কোড বসবে */}
-                             <p>Google Ad Display Area</p>
+                            {/* আইডি ঠিকমতো আছে কি না নিশ্চিত করুন */}
+                            <div id="container-8ba4c4f8adfef978106d9fce39912c16"></div>
                         </div>
                     </div>
                 </div>

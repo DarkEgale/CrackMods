@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Loader2 } from "lucide-react"; 
 import { Helmet } from "react-helmet-async";
 import Card from "../../Components/Cards/card";
+import { AdModal } from "../../Components/AdModel/admodel"; // আপনার অ্যাড মডাল ইমপোর্ট করুন
 import './home.scss';
 
 export const Home = () => {
@@ -11,53 +12,48 @@ export const Home = () => {
     const [activeCategory, setActiveCategory] = useState("All");
     const [loading, setLoading] = useState(true);
 
-    // --- সরাসরি হার্ডকোড করা লিঙ্ক ---
-    const API_BASE = "https://crackmods.onrender.com/";
+    // মডাল কন্ট্রোল করার জন্য স্টেট
+    const [showAdModal, setShowAdModal] = useState(false);
+    const [selectedDownloadLink, setSelectedDownloadLink] = useState("");
 
+    const API_BASE = "https://crackmods.onrender.com/";
     const categories = ["All", "Tools", "Social", "Games", "Productivity"];
 
-    // অ্যাপ ডাটা ফেচ করা
     useEffect(() => {
         const fetchApps = async () => {
             setLoading(true);
             try {
-                // সরাসরি আপনার রেন্ডার সার্ভারের এন্ডপয়েন্ট কল করা হচ্ছে
                 const response = await fetch(`${API_BASE}api/auth/all-apps`);
-                
-                if (!response.ok) {
-                    throw new Error(`Server Error: ${response.status}`);
-                }
-
                 const data = await response.json();
                 if (data.success) {
                     setApps(data.allApps);
                     setFilteredApps(data.allApps);
                 }
             } catch (error) {
-                console.error("Fetch Error Details:", error);
+                console.error("Fetch Error:", error);
             } finally {
                 setLoading(false);
             }
         };
         fetchApps();
-    }, []); // API_BASE হার্ডকোড করা তাই ডিপেন্ডেন্সি থেকে সরিয়ে দিলাম
+    }, []);
 
-    // ফিল্টারিং লজিক
+    // ডাউনলোড বাটনে ক্লিক করলে যা হবে
+    const handleDownloadClick = (app) => {
+        // এখানে আপনার ফাইলের আসল লিঙ্কটি সেট করুন
+        const finalLink = `${API_BASE}${app.file_path}`; 
+        setSelectedDownloadLink(finalLink);
+        setShowAdModal(true); // মডাল ওপেন হবে
+    };
+
     useEffect(() => {
         let result = apps;
-
         if (activeCategory !== "All") {
-            result = result.filter(app => 
-                app.category?.toLowerCase() === activeCategory.toLowerCase()
-            );
+            result = result.filter(app => app.category?.toLowerCase() === activeCategory.toLowerCase());
         }
-
         if (searchTerm.trim()) {
-            result = result.filter(app => 
-                app.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            result = result.filter(app => app.name.toLowerCase().includes(searchTerm.toLowerCase()));
         }
-
         setFilteredApps(result);
     }, [searchTerm, activeCategory, apps]);
 
@@ -67,6 +63,14 @@ export const Home = () => {
                 <title>CrackMods - Download Best Premium Mod APKs for Free</title>
                 <meta name="description" content="Download 100% working mod apks for games, tools, and social apps for free." />
             </Helmet>
+
+            {/* যদি মডাল ট্রু হয়, তবেই অ্যাড মডাল দেখাবে */}
+            {showAdModal && (
+                <AdModal 
+                    downloadLink={selectedDownloadLink} 
+                    onClose={() => setShowAdModal(false)} 
+                />
+            )}
 
             <header className="hero-section">
                 <div className="hero-content">
@@ -104,20 +108,16 @@ export const Home = () => {
                 ) : (
                     <section className="apps-grid">
                         {filteredApps.length > 0 ? (
-                            filteredApps.map((app, index) => (
-                                <div key={app._id} className="app-card-item">
-                                    {index > 0 && index % 6 === 0 && (
-                                        <div className="ad-card-wrapper">
-                                            <div className="ad-card-inner">
-                                                <span className="ad-label">Sponsored</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                    
+                            filteredApps.map((app) => (
+                                <div 
+                                    key={app._id} 
+                                    className="app-card-item" 
+                                    onClick={() => handleDownloadClick(app)} // কার্ডে ক্লিক করলে মডাল আসবে
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <Card
                                         id={app._id}
                                         title={app.name}
-                                        // হার্ডকোড করা বেস ইউআরএল ব্যবহার করে ইমেজ দেখানো
                                         iconImg={`${API_BASE}${app.icon_path}`}
                                         screenshotImg={`${API_BASE}${app.screenshots?.[0] || ""}`}
                                         category={app.category}

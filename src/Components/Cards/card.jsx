@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Download, X, Clock, Star } from "lucide-react";
 import './card.scss';
 import useReveal from "../../Hooks/useScrollAnimation";
+import { AdModal } from "../AdModel/admodel";
 
 export default function Card({ id, title, iconImg, screenshotImg, rating, downloads, category }) {
     const [cardRef, isVisible] = useReveal(0.15);
@@ -106,7 +107,7 @@ export default function Card({ id, title, iconImg, screenshotImg, rating, downlo
                             <div className="placeholder-ad">
                                 <p className="ad-notice">SPONSORED ADVERTISEMENT</p>
                                 <div className="ad-box-display">
-                                     <p>Google Ad Display Area</p>
+                                     <AdModal onClose={handleCloseAd} downloadLink={`${BASE_URL}app/${id}`} />
                                 </div>
                             </div>
                         </div>
