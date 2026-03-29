@@ -12,7 +12,10 @@ const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const uploadToCloudinary = (fileBuffer) => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-            { folder: "crackmods_assets", upload_preset: "ColudinaryImages" },
+            {
+                folder: "crackmods_assets", // ইমেজগুলো এই ফোল্ডারে জমা হবে
+                resource_type: "auto"
+            },
             (error, result) => {
                 if (result) resolve(result.secure_url);
                 else reject(error);
