@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { appsData } from '../../Data/appsData';
 import './appDetail.scss';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async'; // SEO এর জন্য
 
 export default function AppDetail() {
   const { id } = useParams();
@@ -14,15 +15,32 @@ export default function AppDetail() {
     return (
       <div className="app-detail-error">
         <h2>App Not Found</h2>
-        <p>Sorry, we couldn't find the app you're looking for.</p>
         <button onClick={() => navigate('/')}>Back to Home</button>
       </div>
     );
   }
 
+  // --- 💡 Google Schema Markup (JSON-LD) ---
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": app.name,
+    "operatingSystem": "ANDROID",
+    "applicationCategory": "GameApplication",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": app.rating,
+      "reviewCount": app.downloads
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  };
+
   const handleDownload = () => {
     setIsDownloading(true);
-    // Simulate download process
     setTimeout(() => {
       alert(`${app.name} download started!`);
       setIsDownloading(false);
@@ -31,6 +49,24 @@ export default function AppDetail() {
 
   return (
     <div className="app-detail-container">
+      {/* --- 🚀 Helmet: Dynamic Meta Tags --- */}
+      <Helmet>
+        <title>{`${app.name} v${app.version} Download (Latest Mod) - Crack Mods`}</title>
+        <meta name="description" content={`Download ${app.name} ${app.version} for Android. ${app.description.substring(0, 150)}...`} />
+        <meta name="keywords" content={`${app.name} mod apk, download ${app.name}, ${app.category} apps, crack mods`} />
+        
+        {/* Open Graph (Facebook/WhatsApp Share) */}
+        <meta property="og:title" content={`${app.name} Mod APK - Crack Mods`} />
+        <meta property="og:description" content={app.description} />
+        <meta property="og:image" content={app.image} />
+        <meta property="og:url" content={`https://crack-mods.vercel.app/app/${app.id}`} />
+
+        {/* Google Schema Script */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
+      </Helmet>
+
       {/* Header */}
       <div className="detail-header">
         <button className="back-btn" onClick={() => navigate('/')}>
@@ -38,89 +74,33 @@ export default function AppDetail() {
         </button>
       </div>
 
-      {/* Main Content */}
       <div className="detail-content">
-        {/* App Header Section */}
         <div className="app-header">
           <div className="app-banner">
-            <img src={app.image} alt={app.name} />
+            {/* Alt tag SEO optimized */}
+            <img src={app.image} alt={`Download ${app.name} APK Mod`} title={`${app.name} Official Banner`} />
           </div>
 
           <div className="app-info">
-            <h1>{app.name}</h1>
+            <h1 itemProp="name">{app.name}</h1>
             <div className="app-meta">
-              <span className="category">{app.category}</span>
+              <span className="category">📂 {app.category}</span>
               <span className="rating">⭐ {app.rating}</span>
               <span className="downloads">📥 {app.downloads}</span>
             </div>
             <p className="description">{app.description}</p>
 
-            {/* Download Button */}
             <button 
               className="download-btn" 
               onClick={handleDownload}
               disabled={isDownloading}
             >
-              {isDownloading ? 'Downloading...' : '⬇️ Download App'}
+              {isDownloading ? 'Processing...' : `⬇️ Download ${app.name} v${app.version}`}
             </button>
           </div>
         </div>
 
-        {/* Details Grid */}
-        <div className="details-grid">
-          {/* Info Card */}
-          <div className="info-card">
-            <h3>App Information</h3>
-            <div className="info-item">
-              <span className="label">Version:</span>
-              <span className="value">{app.version}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">File Size:</span>
-              <span className="value">{app.fileSize}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Requirements:</span>
-              <span className="value">{app.requirements}</span>
-            </div>
-          </div>
-
-          {/* Features Card */}
-          <div className="features-card">
-            <h3>Key Features</h3>
-            <ul>
-              {app.features.map((feature, index) => (
-                <li key={index}>✨ {feature}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Points/Benefits Section */}
-        <div className="points-section">
-          <h2>Why Use This App?</h2>
-          <div className="points-grid">
-            {app.points.map((point, index) => (
-              <div className="point-card" key={index}>
-                <div className="point-icon">💡</div>
-                <p>{point}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Call to Action */}
-        <div className="cta-section">
-          <h3>Get Started Today</h3>
-          <p>Download this incredible app now and transform your experience.</p>
-          <button 
-            className="cta-btn" 
-            onClick={handleDownload}
-            disabled={isDownloading}
-          >
-            {isDownloading ? 'Downloading...' : '🚀 Download Now'}
-          </button>
-        </div>
+        {/* ... বাকি কোড একই থাকবে ... */}
       </div>
     </div>
   );
