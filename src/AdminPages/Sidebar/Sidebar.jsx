@@ -24,7 +24,7 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
                             key={item.id}
                             className={activeTab === item.id ? 'active' : ''}
                             // এখানে একটি চেক বসিয়ে দিলাম যাতে ফাংশন না থাকলে ক্র্যাশ না করে
-                            onClick={() => setActiveTab && setActiveTab(item.id)} 
+                            onClick={() => setActiveTab && setActiveTab(item.id)}
                         >
                             <span className="icon">{item.icon}</span>
                             <span className="label">{item.label}</span>

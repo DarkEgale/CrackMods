@@ -60,7 +60,7 @@ export const AppUploadForm = () => {
 
         try {
             // লিঙ্কটি হবে: https://crackmods.onrender.com/api/admin/publish-app
-            const api = `${BASE_URL}api/admin/publish-app`;
+            const api = `${BASE_URL}api/admin/publish`;
             
             const res = await fetch(api, { 
                 method: "POST", 
