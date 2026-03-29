@@ -17,14 +17,21 @@ export const AppsData = () => {
     });
     const [editFiles, setEditFiles] = useState({ icon: null, apkFile: null });
 
-    const api = `${import.meta.env.VITE_API_URL}api/admin`; // API URL from environment variable
+    // --- সরাসরি হার্ডকোড করা বেস ইউআরএল ---
+    const BASE_URL = "https://crackmods.onrender.com/";
+    const api = `${BASE_URL}api/admin`; 
 
     const fetchApps = async () => {
         setLoading(true);
         try {
+            // লিঙ্কটি হবে: https://crackmods.onrender.com/api/admin/all-apps
             const response = await fetch(`${api}/all-apps`, { credentials: 'include' });
             const data = await response.json();
-            if (data.success) setApps(data.allApps);
+            
+            // ব্যাকএন্ডে success: true পাঠানো নিশ্চিত করুন
+            if (data.success) {
+                setApps(data.allApps || []);
+            }
         } catch (error) {
             console.error("Fetch Error:", error);
         } finally {
@@ -54,7 +61,10 @@ export const AppsData = () => {
         setUpdating(true);
         const formData = new FormData();
         
+        // সব টেক্সট ডাটা অ্যাপেন্ড করা
         Object.keys(editData).forEach(key => formData.append(key, editData[key]));
+        
+        // ফাইল থাকলে অ্যাপেন্ড করা
         if (editFiles.icon) formData.append("icon", editFiles.icon);
         if (editFiles.apkFile) formData.append("apkFile", editFiles.apkFile);
 
@@ -63,14 +73,18 @@ export const AppsData = () => {
                 method: 'PATCH',
                 credentials: 'include',
                 body: formData
+                // Note: FormData পাঠালে Content-Type হেডার দেওয়ার প্রয়োজন নেই
             });
             const result = await response.json();
             if (result.success) {
                 alert("App Updated Successfully!");
                 setIsEditOpen(false);
-                fetchApps();
+                fetchApps(); // টেবিল রিফ্রেশ
+            } else {
+                alert(result.message || "Update failed");
             }
         } catch (error) {
+            console.error("Update Error:", error);
             alert("Update Failed!");
         } finally {
             setUpdating(false);
@@ -80,8 +94,14 @@ export const AppsData = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this app?")) {
             try {
-                const res = await fetch(`${api}/delete-app/${id}`, { method: 'DELETE', credentials: 'include' });
-                if(res.ok) setApps(apps.filter(app => app._id !== id));
+                const res = await fetch(`${api}/delete-app/${id}`, { 
+                    method: 'DELETE', 
+                    credentials: 'include' 
+                });
+                if(res.ok) {
+                    setApps(apps.filter(app => app._id !== id));
+                    alert("App Deleted!");
+                }
             } catch (err) { console.error(err); }
         }
     };
@@ -96,7 +116,10 @@ export const AppsData = () => {
 
                 <div className="table-wrapper">
                     {loading ? (
-                        <div className="loading-msg">Fetching data...</div>
+                        <div className="loading-msg">
+                            <Loader2 className="spinner animate-spin" size={24} />
+                            Fetching data...
+                        </div>
                     ) : (
                         <table className="apps-table">
                             <thead>
@@ -108,18 +131,22 @@ export const AppsData = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {apps.map((app) => (
+                                {apps.length > 0 ? apps.map((app) => (
                                     <tr key={app._id}>
                                         <td className="app-name">{app.name}</td>
                                         <td><span className="version-badge">v{app.version}</span></td>
                                         <td style={{textTransform: 'capitalize'}}>{app.category}</td>
                                         <td className="actions">
-                                            <button className="btn-edit" onClick={() => handleEditClick(app)}><Edit size={18} /></button>
-                                            <button className="btn-delete" onClick={() => handleDelete(app._id)}><Trash2 size={18} /></button>
-                                            <button className="btn-view"><ExternalLink size={18} /></button>
+                                            <button title="Edit" className="btn-edit" onClick={() => handleEditClick(app)}><Edit size={18} /></button>
+                                            <button title="Delete" className="btn-delete" onClick={() => handleDelete(app._id)}><Trash2 size={18} /></button>
+                                            <button title="View Details" className="btn-view" onClick={() => window.open(`/app/${app._id}`, '_blank')}><ExternalLink size={18} /></button>
                                         </td>
                                     </tr>
-                                ))}
+                                )) : (
+                                    <tr>
+                                        <td colSpan="4" style={{textAlign: 'center', padding: '20px'}}>No applications found.</td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     )}
@@ -139,11 +166,11 @@ export const AppsData = () => {
                             <div className="form-row">
                                 <div className="input-group">
                                     <label><Smartphone size={14}/> Name</label>
-                                    <input type="text" value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} />
+                                    <input type="text" value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} required />
                                 </div>
                                 <div className="input-group">
                                     <label><Layers size={14}/> Version</label>
-                                    <input type="text" value={editData.version} onChange={(e) => setEditData({...editData, version: e.target.value})} />
+                                    <input type="text" value={editData.version} onChange={(e) => setEditData({...editData, version: e.target.value})} required />
                                 </div>
                             </div>
 
@@ -176,18 +203,18 @@ export const AppsData = () => {
                             <div className="upload-grid">
                                 <div className="upload-box">
                                     <label>New Icon (Optional)</label>
-                                    <input type="file" onChange={(e) => setEditFiles({...editFiles, icon: e.target.files[0]})} />
+                                    <input type="file" accept="image/*" onChange={(e) => setEditFiles({...editFiles, icon: e.target.files[0]})} />
                                 </div>
                                 <div className="upload-box">
                                     <label>New APK (Optional)</label>
-                                    <input type="file" onChange={(e) => setEditFiles({...editFiles, apkFile: e.target.files[0]})} />
+                                    <input type="file" accept=".apk" onChange={(e) => setEditFiles({...editFiles, apkFile: e.target.files[0]})} />
                                 </div>
                             </div>
 
                             <div className="form-actions">
                                 <button type="button" onClick={() => setIsEditOpen(false)} className="btn-cancel">Discard</button>
                                 <button type="submit" className="btn-submit" disabled={updating}>
-                                    {updating ? <Loader2 className="spinner" size={18} /> : "Save Changes"}
+                                    {updating ? <Loader2 className="spinner animate-spin" size={18} /> : "Save Changes"}
                                 </button>
                             </div>
                         </form>

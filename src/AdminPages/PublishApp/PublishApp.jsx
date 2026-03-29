@@ -3,15 +3,14 @@ import { Upload, Smartphone, Info, Layers, Image as ImageIcon, FileCode, Loader2
 import './PublishApp.scss';
 
 export const AppUploadForm = () => {
-    // ১. স্টেট আপডেট: details এর বদলে আলাদা আলাদা ফিল্ড
     const [formData, setFormData] = useState({
         name: "",
         version: "",
         category: "",
-        mainDescription: "", // অ্যাপের ভূমিকা
-        features: "",        // অ্যাপের ফিচারসমূহ
-        whyChoose: "",       // কেন ইউজ করবে
-        howToInstall: "",    // ইন্সটলেশন গাইড
+        mainDescription: "", 
+        features: "",        
+        whyChoose: "",       
+        howToInstall: "",    
         requirements: ""
     });
 
@@ -22,6 +21,9 @@ export const AppUploadForm = () => {
     });
 
     const [loading, setLoading] = useState(false);
+
+    // --- সরাসরি হার্ডকোড করা বেস ইউআরএল ---
+    const BASE_URL = "https://crackmods.onrender.com/";
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,11 +43,13 @@ export const AppUploadForm = () => {
         setLoading(true);
 
         const data = new FormData();
+        
         // সব টেক্সট ডাটা অ্যাপেন্ড করা
         Object.keys(formData).forEach(key => {
             data.append(key, formData[key]);
         });
         
+        // ফাইলসমূহ অ্যাপেন্ড করা
         if (files.icon) data.append("icon", files.icon);
         if (files.apkFile) data.append("apkFile", files.apkFile);
         if (files.screenshots.length > 0) {
@@ -55,16 +59,26 @@ export const AppUploadForm = () => {
         }
 
         try {
-            const api = `${import.meta.env.VITE_API_URL}api/admin/publish-app`;
-            const res = await fetch(api, { method: "POST", body: data });
-            if (res.ok) {
-                alert("App Published Successfully!");
-                window.location.reload(); // ফর্ম রিসেট
+            // লিঙ্কটি হবে: https://crackmods.onrender.com/api/admin/publish-app
+            const api = `${BASE_URL}api/admin/publish-app`;
+            
+            const res = await fetch(api, { 
+                method: "POST", 
+                body: data,
+                credentials: 'include' // এটি অ্যাডমিন সেশন নিশ্চিত করবে
+            });
+            
+            const result = await res.json();
+
+            if (res.ok && result.success) {
+                alert("App Published Successfully! 🎉");
+                window.location.reload(); 
             } else {
-                alert("Failed to publish app");
+                alert(result.message || "Failed to publish app");
             }
         } catch (err) {
-            alert("Network Error!");
+            console.error("Upload Error:", err);
+            alert("Network Error! Please check your connection.");
         } finally {
             setLoading(false);
         }
@@ -82,11 +96,11 @@ export const AppUploadForm = () => {
                     <div className="form-row">
                         <div className="input-group">
                             <label><Smartphone size={16} /> App Name</label>
-                            <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+                            <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="Example: Netflix Mod" />
                         </div>
                         <div className="input-group">
                             <label><Layers size={16} /> Version</label>
-                            <input type="text" name="version" value={formData.version} onChange={handleChange} required />
+                            <input type="text" name="version" value={formData.version} onChange={handleChange} required placeholder="Example: 8.42.0" />
                         </div>
                     </div>
 
@@ -96,12 +110,11 @@ export const AppUploadForm = () => {
                             <option value="">Select Category</option>
                             <option value="tools">Tools</option>
                             <option value="games">Games</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="prices">Premium/VPNs</option>
+                            <option value="social">Social</option>
+                            <option value="productivity">Productivity</option>
                         </select>
                     </div>
 
-                    {/* --- SEO SECTIONS --- */}
                     <div className="input-group">
                         <label><Info size={16} /> Short Description (Intro)</label>
                         <textarea name="mainDescription" value={formData.mainDescription} onChange={handleChange} rows="3" placeholder="What is this app about?"></textarea>
@@ -127,7 +140,6 @@ export const AppUploadForm = () => {
                         <input type="text" name="requirements" value={formData.requirements} onChange={handleChange} placeholder="Android 8.0+, 4GB RAM" />
                     </div>
 
-                    {/* --- FILES SECTION (Same as before) --- */}
                     <div className="upload-grid">
                         <div className="upload-box">
                             <label>App Icon</label>
@@ -161,17 +173,13 @@ export const AppUploadForm = () => {
                     </div>
 
                     <div className="form-actions">
-                        <button type="button" className="btn-cancel" disabled={loading}>Discard</button>
+                        <button type="button" className="btn-cancel" disabled={loading} onClick={() => window.location.reload()}>Discard</button>
                         <button type="submit" className="btn-submit" disabled={loading}>
-                            {loading ? <><Loader2 size={18} className="spinner" /> Publishing...</> : "Publish App"}
+                            {loading ? <><Loader2 size={18} className="spinner animate-spin" /> Publishing...</> : "Publish App"}
                         </button>
                     </div>
                 </form>
             </div>
         </div>
-
-                    
     );
 };
-
-           
