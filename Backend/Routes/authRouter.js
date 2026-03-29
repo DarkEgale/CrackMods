@@ -55,9 +55,7 @@ router.get('/all-apps', getAllApps);
 router.get('/apps-by-category/:slug', getAppsByCategory);
 router.get('/app-details/:id', getSingleApp); 
 
-router.get('/download/:id', (req, res) => {
-    // ডাউনলোড লজিক...
-});
+
 
 router.get("/download/:fileId", downloadApp);
 // --- 🔒 Protected Routes ---
