@@ -20,7 +20,7 @@ router.get('/sitemap.xml', async (req, res) => {
         let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://crack-mods.vercel.app/</loc>
+        <loc>https://www.mdshimulhossen.top/</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>`;
@@ -29,7 +29,7 @@ router.get('/sitemap.xml', async (req, res) => {
             const date = app.updatedAt ? new Date(app.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
             xml += `
     <url>
-        <loc>https://crack-mods.vercel.app/app/${app._id}</loc>
+        <loc>https://www.mdshimulhossen.top/app/${app._id}</loc>
         <lastmod>${date}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
