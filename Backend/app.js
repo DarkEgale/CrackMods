@@ -29,7 +29,7 @@ const corsOptions = {
     }
   },
   credentials: true, // লগইন বা ক্রেডেনশিয়াল সাপোর্টের জন্য
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH','OPTIONS'], // অনুমোদিত HTTP মেথড
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
