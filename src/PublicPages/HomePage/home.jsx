@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Loader2 } from "lucide-react"; 
 import { Helmet } from "react-helmet-async";
 import Card from "../../Components/Cards/card";
-import { AdModal } from "../../Components/AdModel/admodel"; // আপনার অ্যাড মডাল ইমপোর্ট করুন
+import { AdModal } from "../../Components/AdModel/admodel"; 
 import './home.scss';
 
 export const Home = () => {
@@ -16,6 +16,7 @@ export const Home = () => {
     const [showAdModal, setShowAdModal] = useState(false);
     const [selectedDownloadLink, setSelectedDownloadLink] = useState("");
 
+    // আপনার ব্যাকএন্ড এপিআই বেস ইউআরএল (শুধু এপিআই কলের জন্য লাগবে)
     const API_BASE = "https://crackmods.onrender.com/";
     const categories = ["All", "Tools", "Social", "Games", "Productivity"];
 
@@ -23,6 +24,7 @@ export const Home = () => {
         const fetchApps = async () => {
             setLoading(true);
             try {
+                // এপিআই কল করার সময় API_BASE ব্যবহার হবে
                 const response = await fetch(`${API_BASE}api/auth/all-apps`);
                 const data = await response.json();
                 if (data.success) {
@@ -38,12 +40,13 @@ export const Home = () => {
         fetchApps();
     }, []);
 
-    // ডাউনলোড বাটনে ক্লিক করলে যা হবে
+    // ডাউনলোড বাটনে ক্লিক করলে মডাল ওপেন হবে
     const handleDownloadClick = (app) => {
-        // এখানে আপনার ফাইলের আসল লিঙ্কটি সেট করুন
-        const finalLink = `${API_BASE}${app.file_path}`; 
+        // যেহেতু app_path এ এখন টেলিগ্রাম ফাইল আইডি আছে, তাই আপাতত সেটিই সেট করছি
+        // ভবিষ্যতে ডাউনলোড গেটওয়ে বানালে এখানে পরিবর্তন আসবে
+        const finalLink = app.app_path; 
         setSelectedDownloadLink(finalLink);
-        setShowAdModal(true); // মডাল ওপেন হবে
+        setShowAdModal(true); 
     };
 
     useEffect(() => {
@@ -64,7 +67,7 @@ export const Home = () => {
                 <meta name="description" content="Download 100% working mod apks for games, tools, and social apps for free." />
             </Helmet>
 
-            {/* যদি মডাল ট্রু হয়, তবেই অ্যাড মডাল দেখাবে */}
+            {/* অ্যাড মডাল */}
             {showAdModal && (
                 <AdModal 
                     downloadLink={selectedDownloadLink} 
@@ -112,14 +115,15 @@ export const Home = () => {
                                 <div 
                                     key={app._id} 
                                     className="app-card-item" 
-                                    onClick={() => handleDownloadClick(app)} // কার্ডে ক্লিক করলে মডাল আসবে
+                                    onClick={() => handleDownloadClick(app)} 
                                     style={{ cursor: 'pointer' }}
                                 >
+                                    {/* এখানে খেয়াল করুন: iconImg এবং screenshotImg এ কোনো API_BASE যোগ করা হয়নি */}
                                     <Card
                                         id={app._id}
                                         title={app.name}
-                                        iconImg={`${API_BASE}${app.icon_path}`}
-                                        screenshotImg={`${API_BASE}${app.screenshots?.[0] || ""}`}
+                                        iconImg={app.icon_path} 
+                                        screenshotImg={app.screenshots?.[0] || ""} 
                                         category={app.category}
                                         rating={app.rating || "4.8"}
                                         downloads={app.downloads || "1M+"}

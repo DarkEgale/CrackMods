@@ -5,7 +5,10 @@ import { Download, Layers, Smartphone, Info, CheckCircle, ShieldCheck, Loader2 }
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-
+// Swiper styles (এগুলো ইমপোর্ট করা না থাকলে স্লাইডার কাজ করবে না)
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 import { AdModal } from "../../Components/AdModel/admodel";
 import './appdetails.scss'
@@ -17,12 +20,13 @@ export const AppDetails = () => {
     const [isDownloading, setIsDownloading] = useState(false);
     const [showAd, setShowAd] = useState(false);
 
-    const BASE_URL = "https://crackmods.onrender.com/";
+    // শুধু এপিআই কলের জন্য বেস ইউআরএল লাগবে
+    const API_BASE = "https://crackmods.onrender.com/";
 
     useEffect(() => {
         const fetchAppDetails = async () => {
             try {
-                const res = await fetch(`${BASE_URL}api/auth/app-details/${id}`);
+                const res = await fetch(`${API_BASE}api/auth/app-details/${id}`);
                 const data = await res.json();
                 if (data.success) {
                     setApp(data.app);
@@ -52,21 +56,23 @@ export const AppDetails = () => {
         <div className="details-wrapper">
             <Helmet>
                 <title>{`${app.name} Mod APK v${app.version} Download`}</title>
-                <meta name="description" content={app.details?.substring(0, 160)} />
+                <meta name="description" content={app.mainDescription?.substring(0, 160)} />
             </Helmet>
 
             {showAd && (
                 <div style={{ position: 'fixed', zIndex: 9999 }}>
                     <AdModal 
                         onClose={() => setShowAd(false)} 
-                        downloadLink={`${BASE_URL}${app.app_path}`} 
+                        // সরাসরি app_path (Telegram File ID) যাবে, API_BASE যোগ হবে না
+                        downloadLink={app.app_path} 
                     />
                 </div>
             )}
 
             <header className="details-header">
                 <div className="container header-flex">
-                    <img src={`${BASE_URL}${app.icon_path}`} alt={app.name} className="main-app-icon" />
+                    {/* Cloudinary লিঙ্ক সরাসরি ব্যবহার করা হয়েছে */}
+                    <img src={app.icon_path} alt={app.name} className="main-app-icon" />
                     <div className="app-title-area">
                         <h1>{app.name}</h1>
                         <p className="category-text"><Layers size={14} /> {app.category}</p>
@@ -81,7 +87,7 @@ export const AppDetails = () => {
             <main className="container main-layout">
                 <div className="left-content">
                     
-                    {/* --- ১. Screenshots (এখন সবার উপরে) --- */}
+                    {/* --- ১. Screenshots --- */}
                     <section className="screenshots-section box">
                         <h2><Smartphone size={18} /> Screenshots & Preview</h2>
                         {app.screenshots?.length > 0 ? (
@@ -100,7 +106,8 @@ export const AppDetails = () => {
                                 {app.screenshots.map((screen, index) => (
                                     <SwiperSlide key={index}>
                                         <div className="screenshot-card">
-                                            <img src={`${BASE_URL}${screen}`} alt={`preview-${index}`} />
+                                            {/* স্ক্রিনশট লিঙ্ক সরাসরি ব্যবহার করা হয়েছে */}
+                                            <img src={screen} alt={`preview-${index}`} />
                                         </div>
                                     </SwiperSlide>
                                 ))}
@@ -108,11 +115,11 @@ export const AppDetails = () => {
                         ) : <p>No preview available.</p>}
                     </section>
 
-                    {/* --- ২. Description (স্ক্রিনশটের নিচে) --- */}
+                    {/* --- ২. Description --- */}
                     <section className="description-section box">
                         <h2><Info size={18} /> About {app.name}</h2>
                         <div className="details-body" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.7' }}>
-                            {app.details}
+                            {app.mainDescription}
                         </div>
                     </section>
 
@@ -142,8 +149,8 @@ export const AppDetails = () => {
                     <div className="tech-info-card">
                         <h3>App Information</h3>
                         <div className="info-item"><span>Version</span> <strong>{app.version}</strong></div>
-                        <div className="info-item"><span>Rating</span> <strong>{app.rating} ★</strong></div>
-                        <div className="info-item"><span>Downloads</span> <strong>{app.downloads}</strong></div>
+                        <div className="info-item"><span>Rating</span> <strong>{app.rating || "4.8"} ★</strong></div>
+                        <div className="info-item"><span>Downloads</span> <strong>{app.downloads || "100K+"}</strong></div>
                         <div className="info-item"><span>Android</span> <strong>{app.requirements}</strong></div>
                         <div className="info-item"><span>Updated</span> <strong>{new Date(app.updatedAt).toLocaleDateString()}</strong></div>
                     </div>

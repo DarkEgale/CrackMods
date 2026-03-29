@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// টেলিগ্রাম বট কনফিগারেশন
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN);
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
@@ -13,7 +14,7 @@ const uploadToCloudinary = (fileBuffer) => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
             {
-                folder: "crackmods_assets", // ইমেজগুলো এই ফোল্ডারে জমা হবে
+                folder: "crackmods_assets",
                 resource_type: "auto"
             },
             (error, result) => {
@@ -48,11 +49,22 @@ export const publishApp = async (req, res) => {
 
         // APK ফাইল আপলোড (Telegram)
         const apkFile = req.files['apkFile'][0];
-        const telegramRes = await bot.sendDocument(CHAT_ID, apkFile.buffer, {
-            caption: `📦 App: ${name}\n🚀 Version: ${version}`,
-        }, { filename: apkFile.originalname });
+        
+        // ফাইল পাঠানোর সময় আসল নাম এবং টাইপ নির্দিষ্ট করে দেওয়া হচ্ছে
+        const telegramRes = await bot.sendDocument(
+            CHAT_ID, 
+            apkFile.buffer, 
+            {
+                caption: `📦 *App:* ${name}\n🚀 *Version:* ${version}`,
+                parse_mode: 'Markdown'
+            }, 
+            { 
+                filename: apkFile.originalname, // এখানে আসল .apk নাম যাবে
+                contentType: 'application/vnd.android.package-archive' 
+            }
+        );
 
-        const app_path = telegramRes.document.file_id; // এখানে টেলিগ্রামের File ID সেভ হবে
+        const app_path = telegramRes.document.file_id; // টেলিগ্রামের File ID
 
         const newApp = await Apps.create({
             name, version, category, mainDescription, features, whyChoose, howToInstall, requirements,
@@ -62,6 +74,7 @@ export const publishApp = async (req, res) => {
         res.status(201).json({ success: true, message: "Application published successfully!", data: newApp });
 
     } catch (error) {
+        console.error("Publish Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -104,9 +117,18 @@ export const updateApp = async (req, res) => {
         // নতুন APK আসলে
         if (req.files?.['apkFile']) {
             const apkFile = req.files['apkFile'][0];
-            const telegramRes = await bot.sendDocument(CHAT_ID, apkFile.buffer, {
-                caption: `🆙 Update: ${req.body.name || existingApp.name}`,
-            }, { filename: apkFile.originalname });
+            const telegramRes = await bot.sendDocument(
+                CHAT_ID, 
+                apkFile.buffer, 
+                {
+                    caption: `🆙 *Update:* ${req.body.name || existingApp.name}`,
+                    parse_mode: 'Markdown'
+                }, 
+                { 
+                    filename: apkFile.originalname, 
+                    contentType: 'application/vnd.android.package-archive' 
+                }
+            );
             dataToUpdate.app_path = telegramRes.document.file_id;
         }
 
@@ -124,6 +146,7 @@ export const updateApp = async (req, res) => {
 
         res.status(200).json({ success: true, message: "App updated successfully", data: updatedApp });
     } catch (error) {
+        console.error("Update Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -134,8 +157,6 @@ export const deleteApp = async (req, res) => {
         const app = await Apps.findById(req.params.id);
         if (!app) return res.status(404).json({ success: false, message: "App not found" });
 
-        // নোট: ক্লাউডিনারি বা টেলিগ্রাম থেকে ফাইল ডিলিট করার কোড এখানে দেওয়া হয়নি, 
-        // কারণ এতে অনেক সময় API লিমিট শেষ হয়ে যায়। ডাটাবেস থেকে ডিলিট করাই আপাতত যথেষ্ট।
         await Apps.findByIdAndDelete(req.params.id);
         res.status(200).json({ success: true, message: "App deleted successfully" });
     } catch (error) {
