@@ -69,7 +69,7 @@ export const CategoryPage = () => {
                                     id={app._id}
                                     title={app.name}
                                     // ইমেজ পাথ হার্ডকোড ফিক্স
-                                    iconImg={`${BASE_URL}${app.icon_path}`}
+                                    iconImg={`${app.icon_path}`}
                                     screenshotImg={app.screenshots?.[0] ? `${BASE_URL}${app.screenshots[0]}` : ""}
                                     category={app.category}
                                     rating={app.rating || "4.5"}
