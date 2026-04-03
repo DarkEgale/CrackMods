@@ -34,10 +34,11 @@ export default function Footer() {
 
         {/* Contact Info */}
         <div className="footer-section contact-section">
-          <h3>Get in Touch</h3>
-          <p>📧 support@crackmods.com</p>
-          <p>📱 +88 01XXXXXXXXX</p>
-          <p>🏢 Bangladesh, Dhaka</p>
+          <h3>Develop by</h3>
+          <p>MD SHIMUL HOSSEN & MD ALFAZ HASSEN</p>
+          <p>📱 +88 01321372849</p>
+          <p>Email:shimul723290@gmail.com</p>
+          <p>🏢 Bangladesh, Rajshahi,Natore</p>
         </div>
 
         {/* Social Links */}

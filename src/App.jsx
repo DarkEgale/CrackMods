@@ -27,8 +27,7 @@ function App() {
         { label: "Tools", path: "/category/tools" },
         { label: "Games", path: "/category/games" },
         { label: "Entertainment", path: "/category/entertainment" },
-        { label: "Premium/VPNs", path: "/category/prices" },
-        { label: "Contact", path: "/contact" }
+        { label: "Premium/VPNs", path: "/category/prices" }
     ];
 
     return (

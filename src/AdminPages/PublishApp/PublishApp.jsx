@@ -88,7 +88,7 @@ export const AppUploadForm = () => {
         <div className="form-wrapper">
             <div className="form-container">
                 <div className="form-header">
-                    <h2>Publish New App (SEO Optimized)</h2>
+                    <h2>Publish New App </h2>
                     <p>Each section will be automatically formatted for search engines.</p>
                 </div>
 

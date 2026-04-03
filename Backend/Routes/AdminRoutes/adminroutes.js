@@ -43,3 +43,5 @@ router.patch("/update-app/:id", upload.fields([
 router.delete("/delete-app/:id", deleteApp);
 
 export default router;
+
+//This tis Admin route
